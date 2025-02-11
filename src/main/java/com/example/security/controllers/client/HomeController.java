@@ -42,6 +42,11 @@ public class HomeController {
         model.addAttribute("pageTitle", "Contact");
         return "client/contact";
     }
+    @GetMapping("/cart")
+    public String cart(Model model) {
+        model.addAttribute("pageTitle", "Cart");
+        return "client/cart";
+    }
 
     @GetMapping("/profile")
     public String profile(Model model) {
