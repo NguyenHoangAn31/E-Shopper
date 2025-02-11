@@ -25,6 +25,12 @@ public class HomeController {
         return "client/index";
     }
 
+    @GetMapping("/shop")
+    public String shop(Model model) {
+        model.addAttribute("pageTitle", "Shop");
+        return "client/shop";
+    }
+
     @GetMapping("/about")
     public String about(Model model) {
         model.addAttribute("pageTitle", "About");
