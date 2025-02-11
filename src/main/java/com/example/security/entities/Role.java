@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "roles")
-public class Role {
+public class Role extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +21,5 @@ public class Role {
 
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
-
-    // @Override
-    // public String toString() {
-    //     return "Role{id=" + id + ", name='" + name + "', shortName='" + shortName + "'}";
-    // }
 
 }

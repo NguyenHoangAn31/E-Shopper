@@ -58,11 +58,9 @@ public class HomeController {
 
     @GetMapping("/login")
     public String login(Model model) {
-        // model.addAttribute("user", new UserRequest());
         model.addAttribute("pageTitle", "Login");
         return "client/login";
     }
-
 
 
     @GetMapping("/register")
