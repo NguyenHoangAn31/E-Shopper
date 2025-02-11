@@ -139,7 +139,7 @@
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="index.html" class="nav-item nav-link active">Home</a>
+                            <a th:href="@{/}" class="nav-item nav-link active">Home</a>
                             <a href="shop.html" class="nav-item nav-link">Shop</a>
                            
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
@@ -158,9 +158,6 @@
                                     <a th:href="@{/logout}" class="dropdown-item">Logout</a>
                                 </div>
                             </div>
-                            <!-- <a sec:authorize="isAuthenticated()" th:href="@{/profile}"><span sec:authentication="name"
-                                    class="nav-item nav-link"></span></a>
-                            <a sec:authorize="isAuthenticated()" th:href="@{/logout}"class="nav-item nav-link">Logout</a> -->
 
                             <a sec:authorize="isAnonymous()" th:href="@{/login}" class="nav-item nav-link">Login</a>
                             <a sec:authorize="isAnonymous()" th:href="@{/register}"
@@ -180,7 +177,6 @@
 
     <!-- Main Content -->
     <main layout:fragment="content">
-        <!-- Nội dung sẽ được chèn ở đây -->
     </main>
 
 
