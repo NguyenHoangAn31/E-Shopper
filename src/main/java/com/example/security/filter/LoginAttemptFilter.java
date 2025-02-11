@@ -36,6 +36,13 @@ public class LoginAttemptFilter extends OncePerRequestFilter {
 
         System.out.println("filter check login error and block");
         String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        System.out.println("email: " + email + ", password: " + password);
+        if(email.isBlank()|| password.isBlank()) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value()); // 400
+            response.sendRedirect("/login?error=not-blank");
+            return;
+        }
 
         if (loginAttemptService.isBlocked(email)) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value()); // 429

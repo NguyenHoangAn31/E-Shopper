@@ -42,6 +42,7 @@ public class HomeController {
         model.addAttribute("pageTitle", "Contact");
         return "client/contact";
     }
+
     @GetMapping("/cart")
     public String cart(Model model) {
         model.addAttribute("pageTitle", "Cart");
@@ -50,7 +51,7 @@ public class HomeController {
 
     @GetMapping("/profile")
     public String profile(Model model) {
-        // truy vấn từ db và hiển thị 
+        // truy vấn từ db và hiển thị
         model.addAttribute("pageTitle", "Profile");
         return "client/profile";
     }
@@ -62,6 +63,8 @@ public class HomeController {
         return "client/login";
     }
 
+
+
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("pageTitle", "Register");
@@ -70,7 +73,8 @@ public class HomeController {
     }
 
     @PostMapping("/register")
-    public String handleRegister(@Valid @ModelAttribute("user") UserCreateDto dto, BindingResult bindingResult, Model model) {
+    public String handleRegister(@Valid @ModelAttribute("user") UserCreateDto dto, BindingResult bindingResult,
+            Model model) {
         System.out.println("User Details: " + dto);
 
         if (bindingResult.hasErrors()) {
@@ -80,10 +84,10 @@ public class HomeController {
 
         if (!userService.checkExistAccount(dto.getEmail())) {
             userService.register(dto);
-            return "redirect:/login"; 
+            return "redirect:/login";
         }
 
         model.addAttribute("errorMessage", "Email is already registered!");
-        return "client/register"; 
+        return "client/register";
     }
 }

@@ -1,50 +1,66 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
 
 <main layout:fragment="content">
-    <h2>Register</h2>
-    <div th:if="${errorMessage}" style="color: red;">
-        <p th:text="${errorMessage}"></p>
+    <div class="register-page">
+        <div class="form-register">
+
+            <div class="text-center mb-4">
+                <h2 class="section-title px-5"><span class="px-2">Register</span></h2>
+            </div>
+            <!-- <div th:if="${errorMessage}" style="color: red;">
+                <p th:text="${errorMessage}"></p>
+            </div> -->
+            <form action="/register" method="post" th:object="${user}">
+
+
+                <!-- Email -->
+                <div class="control-group">
+                    <input type="email" id="email" name="email" th:value="${user.email}" class="form-control"
+                        placeholder="Your Email" />
+                    <div th:if="${#fields.hasErrors('email')}" style="color: red;">
+                        <p th:errors="*{email}"></p>
+                    </div>
+                </div>
+                <p class="help-block text-danger"></p>
+
+                <!-- Name -->
+                <div class="control-group">
+                    <input type="text" id="name" name="name" th:value="${user.name}" class="form-control"
+                        placeholder="Your Name" />
+                    <div th:if="${#fields.hasErrors('name')}" style="color: red;">
+                        <p th:errors="*{name}"></p>
+                    </div>
+                </div>
+                <p class="help-block text-danger"></p>
+
+                <!-- Password -->
+                <div class="control-group">
+                    <input type="password" id="password" name="password" class="form-control"
+                        placeholder="Your Password" />
+                    <div th:if="${#fields.hasErrors('password')}" style="color: red;">
+                        <p th:errors="*{password}"></p>
+                    </div>
+                </div>
+                <p class="help-block text-danger"></p>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary py-2 px-4">Register</button>
+
+            </form>
+            <p class="help-block text-danger"></p>
+
+            <a th:href="@{/login}">Back to login</a>
+
+
+        </div>
+        <div class="image-register">
+            <img src="/img/login.jpg" alt="">
+        </div>
+
     </div>
-    <form action="/register" method="post" th:object="${user}">
-      
 
-        <!-- Email -->
-        <div>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" th:value="${user.email}" />
-            <div th:if="${#fields.hasErrors('email')}" style="color: red;">
-                <p th:errors="*{email}"></p>
-            </div>
-        </div>
-
-        <!-- Name -->
-        <div>
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" th:value="${user.name}" />
-            <div th:if="${#fields.hasErrors('name')}" style="color: red;">
-                <p th:errors="*{name}"></p>
-            </div>
-        </div>
-
-        <!-- Password -->
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" />
-            <div th:if="${#fields.hasErrors('password')}" style="color: red;">
-                <p th:errors="*{password}"></p>
-            </div>
-        </div>
-
-
-
-        <!-- Submit Button -->
-        <button type="submit">Register</button>
-    </form>
-
-    <!-- Back to Login Link -->
-    <a th:href="@{/login}">Back to login</a>
 </main>
+
 </html>

@@ -9583,3 +9583,26 @@
     }
   }
   
+
+.main-content{
+  max-width: 1400px;
+  margin: auto;
+  margin-top: 100px;
+}
+
+.login-page,
+.register-page
+{
+  display: flex;
+  gap: 25px;
+}
+
+.login-page .form-login,
+.login-page .image-login,
+.register-page .form-register,
+.register-page .image-register
+{
+  width: 100%;
+  flex: 1 1 500px;
+}
+
