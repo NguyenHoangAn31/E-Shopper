@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<main layout:fragment="content">
+    <h2>Login</h2>
+    <div th:if="${(param.error != null) and (param.error[0] == 'invalid')}" style="color: red;">
+        Invalid username or password.
+    </div>
+
+    <div th:if="${(param.error != null) and (param.error[0] == 'blocked')}" style="color: red;">
+        Your account has been blocked.
+    </div>
+
+    <div th:if="${(param.error != null) and (param.error[0] == 'too-many-requests')}" style="color: red;">
+        Too many failed attempts. Please try again after 1 minute.
+    </div>
+
+    <form action="/login" method="post">
+        <div>
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+
+    </form>
+    <a th:href="@{/oauth2/authorization/google}">Login with Google</a><br>
+    <a th:href="@{/register}">Register</a><br>
+    <a>Forget Password</a>
+</main>
+
+</html>
