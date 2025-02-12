@@ -36,6 +36,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (userOptional.isEmpty()) {
             user = new User();
             user.setEmail(email);
+            user.setImageUrl(oAuth2User.getAttribute("picture"));
             user.setEnabled(true);
             user.setProvider("GOOGLE");
             user.setName(oAuth2User.getAttribute("name"));

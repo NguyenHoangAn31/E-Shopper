@@ -1,9 +1,12 @@
 package com.example.security.controllers.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -55,12 +58,26 @@ public class HomeController {
     @GetMapping("/profile")
     public String profile(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = "Guest"; // Giá trị mặc định nếu không có người dùng nào đăng nhập
 
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+        if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            // Đăng nhập bằng username/password
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            username = userDetails.getUsername(); // Lấy tên người dùng
+            String username = userDetails.getUsername();
+
+            System.out.println("Đăng nhập bằng tài khoản: " + username);
+            model.addAttribute("user", userService.getUser(username));
+
+        } else if (authentication instanceof OAuth2AuthenticationToken) {
+            // Đăng nhập bằng OAuth2
+            OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+            String email = oauthUser.getAttribute("email"); // Lấy email
+
+            System.out.println("Đăng nhập bằng OAuth2: " + email + " - " + email);
+            model.addAttribute("user", userService.getUser(email));
+
+          
         }
+
         model.addAttribute("pageTitle", "Profile");
         return "client/profile";
     }
@@ -70,7 +87,6 @@ public class HomeController {
         model.addAttribute("pageTitle", "Login");
         return "client/login";
     }
-
 
     @GetMapping("/register")
     public String register(Model model) {

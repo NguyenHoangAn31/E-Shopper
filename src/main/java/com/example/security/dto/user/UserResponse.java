@@ -1,7 +1,6 @@
 package com.example.security.dto.user;
 
-import java.time.LocalDate;
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,24 +10,32 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserResponse {
 
-    private int id;
+	private int id;
 
-    private String email;
+	private String email;
 
 	private boolean enabled;
 
+	@NotBlank(message = "Name is required!")
 	private String name;
+
+	@NotBlank(message = "Phone is required!")
+	private String phone;
 
 	private String provider;
 
-	private LocalDate birthday;
+	@NotBlank(message = "Birthdy is required!")
+	private String birthday;
 
 	private String imageUrl;
 
-	private String Ward;
+	@NotBlank(message = "Ward is required!")
+	private String ward;
 
-	private String District;
+	@NotBlank(message = "District is required!")
+	private String district;
 
-	private String Province;
+	@NotBlank(message = "Province is required!")
+	private String province;
 
 }

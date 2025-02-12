@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.security.dto.user.UserRequestCreate;
+import com.example.security.dto.user.UserResponse;
 import com.example.security.entities.Role;
 import com.example.security.entities.User;
 import com.example.security.repositories.RoleRepository;
@@ -27,6 +28,29 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private SessionRegistry sessionRegistry;
+
+    @Override
+    public UserResponse getUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setEmail(user.getEmail());
+        response.setName(user.getName());
+        response.setEnabled(user.isEnabled());
+        response.setPhone(user.getPhone());
+        response.setProvider(user.getProvider());
+        // Kiểm tra nếu birthday là null
+        String birthday = user.getBirthday() != null ? user.getBirthday().toString() : null;
+        response.setBirthday(birthday);
+        response.setImageUrl(user.getImageUrl());
+        response.setWard(user.getWard());
+        response.setDistrict(user.getDistrict());
+        response.setProvince(user.getProvince());
+
+        return response;
+    }
 
     @Override
     public boolean checkExistAccount(String email) {
