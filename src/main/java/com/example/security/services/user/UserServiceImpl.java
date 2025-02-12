@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,36 +31,29 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private SessionRegistry sessionRegistry;
 
-    @Autowired
-    private ModelMapper modelMapper;
 
-    private UserResponse userToDto(User user) {
-        UserResponse response = modelMapper.map(user, UserResponse.class);
-        return response;
-    }
 
-    private User dtoToUser(UserResponse dto) {
-        User user = userRepository.findById(dto.getId()).get();
-        modelMapper.map(dto, user);
+    // private User ResponseToUser(UserResponse dto) {
+    //     User user = userRepository.findById(dto.getId()).get();
+    //     modelMapper.map(dto, user);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate birthday = LocalDate.parse(dto.getBirthday(), formatter);
-        user.setBirthday(birthday);
+    //     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    //     LocalDate birthday = LocalDate.parse(dto.getBirthday(), formatter);
+    //     user.setBirthday(birthday);
         
-        return user;
-    }
+    //     return user;
+    // }
 
     @Override
     public UserResponse getUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return userToDto(user);
+        return null;
     }
 
     @Override
     public void updateUser(UserResponse dto) {
-        User user = dtoToUser(dto);
-        userRepository.save(user);
+        // userRepository.save(user);
     }
 
     @Override
