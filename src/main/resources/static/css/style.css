@@ -9609,4 +9609,15 @@
   flex: 1 1 350px;
 }
 
+.dashboard{
+  flex-wrap: wrap;
+}
+.dashboard .sidebar
+{
+  flex: 1 1 350px;
+}
+
+.dashboard .content-dashboard{
+  flex: 10 1 350px;
+}
 

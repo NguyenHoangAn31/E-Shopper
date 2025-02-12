@@ -37,11 +37,13 @@ public class User extends BaseEntity {
 
 	private String imageUrl;
 
-	private String Ward;
+	private String address;
 
-	private String District;
+	private String ward;
 
-	private String Province;
+	private String district;
+
+	private String province;
 
 	@ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
 

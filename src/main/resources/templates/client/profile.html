@@ -8,44 +8,93 @@
 
             <div class="image">
                   <!-- Hiển thị hình ảnh hiện tại nếu có -->
-                  
+
             </div>
 
             <div class="infomation">
+                  <input type="hidden" id="id" name="id" th:field="*{id}" class="form-control" />
+                  <input type="hidden" id="enabled" name="enabled" th:field="*{enabled}" class="form-control" />
+                  <input type="hidden" id="provider" name="provider" th:field="*{provider}" class="form-control" />
 
-                  <div class="text-center mb-4">
+                  <div class="mb-4">
 
-                        <input type="text" id="name" name="name" th:field="*{name}" class="form-control" />
+                        <input type="email" id="email" name="email" th:field="*{email}" class="form-control" readonly />
                   </div>
                   <p class="help-block text-danger"></p>
 
-                  <div class="text-center mb-4">
+                  <div class="mb-4">
 
-                        <input type="text" id="phone" name="phone" th:field="*{phone}" class="form-control" />
+                        <input type="text" id="name" name="name" th:field="*{name}" class="form-control"
+                              placeholder="Your Name" />
+                        <div th:if="${#fields.hasErrors('name')}" style="color: red;">
+                              <p th:errors="*{name}"></p>
+                        </div>
+                  </div>
+                  <p class="help-block text-danger"></p>
+
+                  <div class="mb-4">
+
+                        <input type="text" id="phone" name="phone" th:field="*{phone}" class="form-control"
+                              placeholder="Your Phone" />
+                        <div th:if="${#fields.hasErrors('phone')}" style="color: red;">
+                              <p th:errors="*{phone}"></p>
+                        </div>
                   </div>
 
                   <p class="help-block text-danger"></p>
 
-                  <div class="text-center mb-4">
+                  <div class="mb-4">
 
-                        <input type="date" id="birthday" name="birthday" th:field="*{birthday}" class="form-control" />
+                        <input type="date" id="birthday" name="birthday" th:field="*{birthday}" class="form-control"
+                              placeholder="Your Birthday" />
+                        <div th:if="${#fields.hasErrors('birthday')}" style="color: red;">
+                              <p th:errors="*{birthday}"></p>
+                        </div>
                   </div>
                   <p class="help-block text-danger"></p>
 
-                  <div class="text-center mb-4">
 
-                        <input type="text" id="ward" name="ward" th:field="*{ward}" class="form-control" />
+
+                  <div class="mb-4">
+
+                        <input type="text" id="province" name="province" th:field="*{province}" class="form-control"
+                              placeholder="Your Province" />
+                        <div th:if="${#fields.hasErrors('province')}" style="color: red;">
+                              <p th:errors="*{province}"></p>
+                        </div>
                   </div>
                   <p class="help-block text-danger"></p>
-                  <div class="text-center mb-4">
 
-                        <input type="text" id="district" name="district" th:field="*{district}" class="form-control" />
+                  <div class="mb-4">
+
+                        <input type="text" id="district" name="district" th:field="*{district}" class="form-control"
+                              placeholder="Your District" />
+                        <div th:if="${#fields.hasErrors('district')}" style="color: red;">
+                              <p th:errors="*{district}"></p>
+                        </div>
                   </div>
                   <p class="help-block text-danger"></p>
 
-                  <div class="text-center mb-4">
+                  
+                  <div class="mb-4">
 
-                        <input type="text" id="province" name="province" th:field="*{province}" class="form-control" />
+                        <input type="text" id="ward" name="ward" th:field="*{ward}" class="form-control"
+                              placeholder="Your Ward" />
+                        <div th:if="${#fields.hasErrors('ward')}" style="color: red;">
+                              <p th:errors="*{ward}"></p>
+                        </div>
+                  </div>
+                  <p class="help-block text-danger"></p>
+
+
+                  
+                  <div class="mb-4">
+
+                        <input type="text" id="address" name="address" th:field="*{address}" class="form-control"
+                              placeholder="Your Address" />
+                        <div th:if="${#fields.hasErrors('address')}" style="color: red;">
+                              <p th:errors="*{address}"></p>
+                        </div>
                   </div>
                   <p class="help-block text-danger"></p>
 

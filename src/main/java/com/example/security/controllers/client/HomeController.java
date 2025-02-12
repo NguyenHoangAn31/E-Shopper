@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.security.dto.user.UserRequestCreate;
+import com.example.security.dto.user.UserResponse;
 import com.example.security.services.user.UserService;
 
 import jakarta.validation.Valid;
@@ -74,12 +75,23 @@ public class HomeController {
 
             System.out.println("Đăng nhập bằng OAuth2: " + email + " - " + email);
             model.addAttribute("user", userService.getUser(email));
-
           
         }
 
         model.addAttribute("pageTitle", "Profile");
         return "client/profile";
+    }
+
+    @PostMapping("/profile")
+    public String handleUpdateProfile(@Valid @ModelAttribute("user") UserResponse dto, BindingResult bindingResult,
+    Model model) {
+        if (bindingResult.hasErrors()) {
+            System.out.println("Errors: " + bindingResult.getAllErrors());
+            return "client/profile";
+        }
+        userService.updateUser(dto);
+        return "redirect:/profile";
+
     }
 
     @GetMapping("/login")
@@ -101,7 +113,7 @@ public class HomeController {
         System.out.println("User Details: " + dto);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "Please correct the errors in the form.");
+            // model.addAttribute("errorMessage", "Please correct the errors in the form.");
             return "client/register";
         }
 

@@ -1,7 +1,10 @@
 package com.example.security.services.user;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,27 +32,36 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private SessionRegistry sessionRegistry;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
+    private UserResponse userToDto(User user) {
+        UserResponse response = modelMapper.map(user, UserResponse.class);
+        return response;
+    }
+
+    private User dtoToUser(UserResponse dto) {
+        User user = userRepository.findById(dto.getId()).get();
+        modelMapper.map(dto, user);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate birthday = LocalDate.parse(dto.getBirthday(), formatter);
+        user.setBirthday(birthday);
+        
+        return user;
+    }
+
     @Override
     public UserResponse getUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        return userToDto(user);
+    }
 
-        UserResponse response = new UserResponse();
-        response.setId(user.getId());
-        response.setEmail(user.getEmail());
-        response.setName(user.getName());
-        response.setEnabled(user.isEnabled());
-        response.setPhone(user.getPhone());
-        response.setProvider(user.getProvider());
-        // Kiểm tra nếu birthday là null
-        String birthday = user.getBirthday() != null ? user.getBirthday().toString() : null;
-        response.setBirthday(birthday);
-        response.setImageUrl(user.getImageUrl());
-        response.setWard(user.getWard());
-        response.setDistrict(user.getDistrict());
-        response.setProvince(user.getProvince());
-
-        return response;
+    @Override
+    public void updateUser(UserResponse dto) {
+        User user = dtoToUser(dto);
+        userRepository.save(user);
     }
 
     @Override
@@ -68,9 +80,7 @@ public class UserServiceImpl implements UserService {
         user.setProvider("LOCAL");
         Role role = roleRepository.findByShortName("USER");
         user.setRoles(Collections.singletonList(role));
-
         userRepository.save(user);
-
     }
 
     @Override
