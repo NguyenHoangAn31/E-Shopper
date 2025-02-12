@@ -27,7 +27,7 @@ public class OrderDetail extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private Order oder;
+    private Order order;
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")

@@ -1,6 +1,9 @@
 package com.example.security.controllers.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -8,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.example.security.dto.UserCreateDto;
+import com.example.security.dto.user.UserRequestCreate;
 import com.example.security.services.user.UserService;
 
 import jakarta.validation.Valid;
@@ -51,7 +54,13 @@ public class HomeController {
 
     @GetMapping("/profile")
     public String profile(Model model) {
-        // truy vấn từ db và hiển thị
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = "Guest"; // Giá trị mặc định nếu không có người dùng nào đăng nhập
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            username = userDetails.getUsername(); // Lấy tên người dùng
+        }
         model.addAttribute("pageTitle", "Profile");
         return "client/profile";
     }
@@ -66,12 +75,12 @@ public class HomeController {
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("pageTitle", "Register");
-        model.addAttribute("user", new UserCreateDto());
+        model.addAttribute("user", new UserRequestCreate());
         return "client/register";
     }
 
     @PostMapping("/register")
-    public String handleRegister(@Valid @ModelAttribute("user") UserCreateDto dto, BindingResult bindingResult,
+    public String handleRegister(@Valid @ModelAttribute("user") UserRequestCreate dto, BindingResult bindingResult,
             Model model) {
         System.out.println("User Details: " + dto);
 

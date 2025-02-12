@@ -24,8 +24,14 @@ public class DataInitializer {
     public CommandLineRunner initializeCategories(CategoryRepository categoryRepository) {
         return args -> {
             if (categoryRepository.count() == 0) {
-                categoryRepository.save(new Category(1, "Category 1", true));
-                categoryRepository.save(new Category(2, "Category 2", true));
+                categoryRepository.save(new Category(1, "Dress", true));
+                categoryRepository.save(new Category(2, "Shirts", true));
+                categoryRepository.save(new Category(3, "Jeans", true));
+                categoryRepository.save(new Category(4, "Swimwear", true));
+                categoryRepository.save(new Category(5, "Sleepwear", true));
+                categoryRepository.save(new Category(6, "Sportswear", true));
+                categoryRepository.save(new Category(7, "Jackets", true));
+                categoryRepository.save(new Category(8, "Shoes", true));
             }
         };
     }

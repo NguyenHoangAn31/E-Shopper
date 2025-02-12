@@ -7,7 +7,7 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.security.dto.UserCreateDto;
+import com.example.security.dto.user.UserRequestCreate;
 import com.example.security.entities.Role;
 import com.example.security.entities.User;
 import com.example.security.repositories.RoleRepository;
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void register(UserCreateDto dto) {
+    public void register(UserRequestCreate dto) {
         User user = new User();
         user.setEmail(dto.getEmail());
         user.setEnabled(true);

@@ -1,4 +1,4 @@
-package com.example.security.dto;
+package com.example.security.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserCreateDto {
+public class UserRequestCreate {
 
     @NotBlank(message = "Email is required!")
     private String email;
