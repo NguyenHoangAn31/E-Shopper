@@ -69,117 +69,117 @@ public class DataInitializer {
                         if (productRepository.count() == 0) {
 
                                 products.add(new Product(0, "Floral Dress", "Elegant floral dress", true,
-                                                categories.get(0), null));
+                                                 200, categories.get(0), null));
                                 products.add(
                                                 new Product(0, "Summer Dress", "Light and breezy summer dress", true,
-                                                                categories.get(0), null));
+                                                                 200, categories.get(0), null));
                                 products.add(new Product(0, "Evening Gown", "Luxurious evening gown", true,
-                                                categories.get(0), null));
+                                                 200, categories.get(0), null));
                                 products.add(
                                                 new Product(0, "Casual Dress", "Perfect for everyday wear", true,
-                                                                categories.get(0), null));
+                                                                 200, categories.get(0), null));
                                 products.add(new Product(0, "Bohemian Dress", "Relaxed and stylish boho dress", true,
-                                                categories.get(0),
+                                                 200, categories.get(0),
                                                 null));
 
                                 products.add(new Product(0, "Formal Shirt", "Classic formal shirt", true,
-                                                categories.get(1), null));
+                                                 200, categories.get(1), null));
                                 products.add(new Product(0, "Casual Shirt", "Everyday casual shirt", true,
-                                                categories.get(1), null));
+                                                 200, categories.get(1), null));
                                 products.add(new Product(0, "Linen Shirt", "Comfortable linen shirt", true,
-                                                categories.get(1), null));
+                                                 200, categories.get(1), null));
                                 products.add(new Product(0, "Denim Shirt", "Stylish denim shirt", true,
-                                                categories.get(1), null));
+                                                 200, categories.get(1), null));
                                 products.add(
                                                 new Product(0, "Flannel Shirt", "Warm and cozy flannel shirt", true,
-                                                                categories.get(1), null));
+                                                                 200, categories.get(1), null));
 
                                 products.add(new Product(0, "Slim Fit Jeans", "Trendy slim fit jeans", true,
-                                                categories.get(2), null));
+                                                 200, categories.get(2), null));
                                 products.add(new Product(0, "Straight Cut Jeans", "Classic straight cut jeans", true,
-                                                categories.get(2),
+                                                 200, categories.get(2),
                                                 null));
                                 products.add(new Product(0, "Ripped Jeans", "Stylish ripped jeans", true,
-                                                categories.get(2), null));
+                                                 200, categories.get(2), null));
                                 products.add(new Product(0, "Skinny Jeans", "Modern skinny jeans", true,
-                                                categories.get(2), null));
+                                                 200, categories.get(2), null));
                                 products.add(new Product(0, "Loose Fit Jeans", "Comfortable loose fit jeans", true,
-                                                categories.get(2),
+                                                 200, categories.get(2),
                                                 null));
 
                                 products.add(new Product(0, "Beach Swimwear", "Stylish beachwear", true,
-                                                categories.get(3), null));
+                                                 200, categories.get(3), null));
                                 products.add(
                                                 new Product(0, "Swimming Trunks", "Comfortable swim trunks", true,
-                                                                categories.get(3), null));
+                                                                 200, categories.get(3), null));
                                 products.add(new Product(0, "One-Piece Swimsuit", "Elegant one-piece", true,
-                                                categories.get(3), null));
-                                products.add(new Product(0, "Bikini Set", "Trendy bikini set", true, categories.get(3),
+                                                 200, categories.get(3), null));
+                                products.add(new Product(0, "Bikini Set", "Trendy bikini set", true,  200, categories.get(3),
                                                 null));
                                 products.add(new Product(0, "Surfing Suit", "Perfect for water sports", true,
-                                                categories.get(3), null));
+                                                 200, categories.get(3), null));
 
                                 products.add(new Product(0, "Silk Pajamas", "Soft and luxurious silk pajamas", true,
-                                                categories.get(4),
+                                                 200, categories.get(4),
                                                 null));
                                 products.add(new Product(0, "Cotton Nightgown", "Comfortable cotton nightgown", true,
-                                                categories.get(4),
+                                                 200, categories.get(4),
                                                 null));
                                 products.add(new Product(0, "Thermal Pajamas", "Warm and cozy thermal pajamas", true,
-                                                categories.get(4),
+                                                 200, categories.get(4),
                                                 null));
                                 products.add(
                                                 new Product(0, "Flannel Pajamas", "Classic flannel pajamas", true,
-                                                                categories.get(4), null));
+                                                                 200, categories.get(4), null));
                                 products.add(
                                                 new Product(0, "Satin Sleepwear", "Elegant satin sleepwear", true,
-                                                                categories.get(4), null));
+                                                                 200, categories.get(4), null));
 
                                 products.add(new Product(0, "Running Shoes",
                                                 "Comfortable running shoes with great grip", true,
-                                                categories.get(5), null));
+                                                 200, categories.get(5), null));
                                 products.add(new Product(0, "Yoga Pants", "Stretchy yoga pants for ultimate comfort",
                                                 true,
-                                                categories.get(5), null));
+                                                 200, categories.get(5), null));
                                 products.add(new Product(0, "Compression Shorts",
                                                 "Supportive compression shorts for workouts", true,
-                                                categories.get(5), null));
+                                                 200, categories.get(5), null));
                                 products.add(new Product(0, "Gym T-shirt", "Breathable gym t-shirt for comfort", true,
-                                                categories.get(5), null));
+                                                 200, categories.get(5), null));
                                 products.add(new Product(0, "Sports Bra", "High-support sports bra for training", true,
-                                                categories.get(5), null));
+                                                 200, categories.get(5), null));
 
                                 // Jackets products
                                 products.add(new Product(0, "Winter Jacket", "Warm winter jacket for cold weather",
                                                 true,
-                                                categories.get(6), null));
+                                                 200, categories.get(6), null));
                                 products.add(new Product(0, "Leather Jacket", "Stylish leather jacket for casual wear",
                                                 true,
-                                                categories.get(6), null));
+                                                 200, categories.get(6), null));
                                 products.add(new Product(0, "Windbreaker", "Light and breathable windbreaker jacket",
                                                 true,
-                                                categories.get(6), null));
+                                                 200, categories.get(6), null));
                                 products.add(new Product(0, "Bomber Jacket",
                                                 "Classic bomber jacket with a trendy design", true,
-                                                categories.get(6), null));
+                                                 200, categories.get(6), null));
                                 products.add(new Product(0, "Puffer Jacket", "Cozy puffer jacket for winter", true,
-                                                categories.get(6),
+                                                 200, categories.get(6),
                                                 null));
 
                                 // Shoes products
                                 products.add(new Product(0, "Running Sneakers", "Lightweight sneakers for running",
                                                 true,
-                                                categories.get(7), null));
+                                                 200, categories.get(7), null));
                                 products.add(new Product(0, "Casual Shoes",
                                                 "Comfortable casual shoes for everyday wear", true,
-                                                categories.get(7), null));
+                                                 200, categories.get(7), null));
                                 products.add(
                                                 new Product(0, "Boots", "Durable boots for outdoor activities", true,
-                                                                categories.get(7), null));
+                                                                 200, categories.get(7), null));
                                 products.add(new Product(0, "Sandals", "Relaxed sandals for summer", true,
-                                                categories.get(7), null));
+                                                 200, categories.get(7), null));
                                 products.add(new Product(0, "Loafers", "Elegant loafers for formal occasions", true,
-                                                categories.get(7),
+                                                 200, categories.get(7),
                                                 null));
 
                                 productRepository.saveAll(products);
@@ -189,12 +189,12 @@ public class DataInitializer {
                                         List<ProductVariant> productVariants = new ArrayList<>();
 
                                         for (int i = 0; i < 10; i++) {
-                                                int price = ThreadLocalRandom.current().nextInt(20, 51); // Random từ 20-50
+                                                // int price = ThreadLocalRandom.current().nextInt(20, 51); // Random từ 20-50
                                                 int stock = ThreadLocalRandom.current().nextInt(200, 501); // Random từ 200-500
                                                 String size = sizes.get(ThreadLocalRandom.current().nextInt(sizes.size())); // Random size
                                                 String color = colors.get(ThreadLocalRandom.current().nextInt(colors.size())); // Random color
                                         
-                                                productVariants.add(new ProductVariant(0, price, stock, size, color, product, null));
+                                                productVariants.add(new ProductVariant(0, stock, size, color, product, null));
                                             }
                                         
                                             product.setVariants(productVariants);

@@ -50,7 +50,7 @@ public class SecurityConfig {
                                                 .loginPage("/login")
                                                 .usernameParameter("email")
                                                 .passwordParameter("password")
-                                                .defaultSuccessUrl("/")
+                                                .defaultSuccessUrl("/?loginSuccess=true", true)
                                                 // .failureUrl("/login?error=true")
                                                 .failureHandler((request, response, exception) -> {
                                                         System.out.println("filer check 2");
@@ -62,7 +62,7 @@ public class SecurityConfig {
 
                                 .oauth2Login(oauth2 -> oauth2
                                                 .loginPage("/oauth2/authorization/google")
-                                                .defaultSuccessUrl("/", true)
+                                                .defaultSuccessUrl("/?loginSuccess=true", true)
                                                 .failureHandler((request, response, exception) -> {
                                                         response.sendRedirect("/login?error=blocked");
 
