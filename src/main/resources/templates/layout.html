@@ -116,14 +116,14 @@
                                 <a href="" class="dropdown-item">Baby's Dresses</a>
                             </div>
                         </div> -->
-                        <a th:href="@{/shop/dress}" class="nav-item nav-link">Dress</a>
-                        <a th:href="@{/shop/shirts}" class="nav-item nav-link">Shirts</a>
-                        <a th:href="@{/shop/jeans}" class="nav-item nav-link">Jeans</a>
-                        <a th:href="@{/shop/swimwear}" class="nav-item nav-link">Swimwear</a>
-                        <a th:href="@{/shop/sleepwear}" class="nav-item nav-link">Sleepwear</a>
-                        <a th:href="@{/shop/sportswear}" class="nav-item nav-link">Sportswear</a>
-                        <a th:href="@{/shop/jackets}" class="nav-item nav-link">Jackets</a>
-                        <a th:href="@{/shop/shoes}" class="nav-item nav-link">Shoes</a>
+                        <a th:href="@{/shop(category='Dress')}" class="nav-item nav-link">Dress</a>
+                        <a th:href="@{/shop(category='Shirts')}" class="nav-item nav-link">Shirts</a>
+                        <a th:href="@{/shop(category='Jeans')}" class="nav-item nav-link">Jeans</a>
+                        <a th:href="@{/shop(category='Swimwear')}" class="nav-item nav-link">Swimwear</a>
+                        <a th:href="@{/shop(category='Sleepwear')}" class="nav-item nav-link">Sleepwear</a>
+                        <a th:href="@{/shop(category='Sportswear')}" class="nav-item nav-link">Sportswear</a>
+                        <a th:href="@{/shop(category='Jackets')}" class="nav-item nav-link">Jackets</a>
+                        <a th:href="@{/shop(category='Shoes')}" class="nav-item nav-link">Shoes</a>
                     </div>
                 </nav>
             </div>
@@ -139,7 +139,7 @@
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a th:href="@{/}" class="nav-item nav-link">Home</a>
-                            <a th:href="@{/shop}" class="nav-item nav-link">Shop</a>
+                            <a th:href="@{/shop(category='all')}" class="nav-item nav-link">Shop</a>
                            
                             <a th:href="@{/contact}" class="nav-item nav-link">Contact</a>
                             <a th:href="@{/about}" class="nav-item nav-link">About Us</a>
