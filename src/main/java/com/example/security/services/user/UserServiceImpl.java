@@ -13,6 +13,7 @@ import com.example.security.dto.user.UserRequestCreate;
 import com.example.security.dto.user.UserResponse;
 import com.example.security.entities.Role;
 import com.example.security.entities.User;
+import com.example.security.mapper.UserMapper;
 import com.example.security.repositories.RoleRepository;
 import com.example.security.repositories.UserRepository;
 
@@ -31,29 +32,35 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private SessionRegistry sessionRegistry;
 
-
+    @Autowired
+    private UserMapper userMapper;
 
     // private User ResponseToUser(UserResponse dto) {
-    //     User user = userRepository.findById(dto.getId()).get();
-    //     modelMapper.map(dto, user);
+    // User user = userRepository.findById(dto.getId()).get();
+    // modelMapper.map(dto, user);
 
-    //     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    //     LocalDate birthday = LocalDate.parse(dto.getBirthday(), formatter);
-    //     user.setBirthday(birthday);
-        
-    //     return user;
+    // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    // LocalDate birthday = LocalDate.parse(dto.getBirthday(), formatter);
+    // user.setBirthday(birthday);
+
+    // return user;
     // }
 
     @Override
     public UserResponse getUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return null;
+        return userMapper.userToResponse(user);
     }
 
     @Override
     public void updateUser(UserResponse dto) {
-        // userRepository.save(user);
+        User user = userRepository.findById(dto.getId())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    userMapper.updateUserFromDto(dto, user);
+    
+    userRepository.save(user);
     }
 
     @Override
