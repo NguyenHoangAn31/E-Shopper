@@ -24,16 +24,22 @@ public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
 
     @Override
-    public Page<ProductResponse> getAllProducts(int page, int size) {
+    public Page<ProductResponse> getAllProducts(int page, int size, String category) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = productRepository.findAll(pageable);
+
+        Page<Product> productPage;
+        if (category.equals("all")) {
+            productPage = productRepository.findAll(pageable);
+        } else {
+            productPage = productRepository.findByCategory_Name(category, pageable);
+        }
 
         return productPage.map(productMapper::productToResponse);
     }
 
     @Override
-    public List<ProductResponse> getAllProductsByCategoryName(String name) {
-        List<Product> products = productRepository.findByCategory_Name(name);
+    public List<ProductResponse> getAllProductsRelatedById(int id) {
+        List<Product> products = productRepository.getAllProductsRelatedById(id);
 
         return products.stream()
                 .map(productMapper::productToResponse)

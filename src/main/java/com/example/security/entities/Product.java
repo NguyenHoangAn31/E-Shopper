@@ -3,6 +3,8 @@ package com.example.security.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,20 +33,14 @@ public class Product extends BaseEntity{
 
     private String description;
 
-    private double price;
-
-    private int stock;
-
-    private String size;
-
-    private String color;
-
     private boolean status;
+
+    private double price;
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
-    private List<ProductImage> images;
+    private List<ProductVariant> variants;
 }
