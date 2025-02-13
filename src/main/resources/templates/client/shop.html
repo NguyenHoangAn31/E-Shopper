@@ -193,7 +193,7 @@
                         <div class="card product-item border-0 mb-4">
                             <div
                                 class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img th:src="@{/img/product/{image}(image=${product.images.get(0)})}"
+                                <img th:src="@{/img/product/{image}(image=${product.imageUrl})}"
                                     class="img-fluid w-100" alt="Product Image">
                             </div>
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
@@ -226,7 +226,7 @@
 
                                 <!-- Nút Previous -->
                                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                    <a class="page-link" th:href="@{/shop(page=${currentPage - 1}, size=9)}"
+                                    <a class="page-link" th:href="@{/shop(page=${currentPage - 1}, size=9, category=${category})}"
                                         aria-label="Previous">
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
@@ -236,13 +236,13 @@
                                 <!-- Danh sách số trang -->
                                 <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item"
                                     th:classappend="${i == currentPage + 1} ? 'active'">
-                                    <a class="page-link" th:href="@{/shop(page=${i - 1}, size=9)}" th:text="${i}"></a>
+                                    <a class="page-link" th:href="@{/shop(page=${i - 1}, size=9, category=${category})}" th:text="${i}"></a>
                                 </li>
 
 
                                 <!-- Nút Next -->
                                 <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
-                                    <a class="page-link" th:href="@{/shop(page=${currentPage + 1}, size=9)}"
+                                    <a class="page-link" th:href="@{/shop(page=${currentPage + 1}, size=9, category=${category})}"
                                         aria-label="Next">
                                         <span aria-hidden="true">&raquo;</span>
                                     </a>

@@ -23,18 +23,16 @@
         <div class="row px-xl-5">
             <div class="col-lg-5 pb-5">
                 <div id="product-carousel" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner border">
+                    <!-- <div class="carousel-inner border">
+                        <div class="carousel-item" th:each="image, stat : ${productsVariant[0].images}"
+                            th:classappend="${stat.index == 0} ? ' active' : ''">
+                            <img class="w-100 h-100" th:src="@{/img/product/{image}(image=${image})}" alt="Image">
+                        </div>
+                    </div> -->
+
+                    <div class="carousel-inner border" id="carousel-images">
                         <div class="carousel-item active">
-                            <img class="w-100 h-100" src="img/product-1.jpg" alt="Image">
-                        </div>
-                        <div class="carousel-item">
-                            <img class="w-100 h-100" src="img/product-2.jpg" alt="Image">
-                        </div>
-                        <div class="carousel-item">
-                            <img class="w-100 h-100" src="img/product-3.jpg" alt="Image">
-                        </div>
-                        <div class="carousel-item">
-                            <img class="w-100 h-100" src="img/product-4.jpg" alt="Image">
+                            <img class="w-100 h-100" id="product-image" src="" alt="Product Image">
                         </div>
                     </div>
                     <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
@@ -47,7 +45,7 @@
             </div>
 
             <div class="col-lg-7 pb-5">
-                <h3 class="font-weight-semi-bold">Colorful Stylish Shirt</h3>
+                <h3 class="font-weight-semi-bold" th:text="${product.name}"></h3>
                 <div class="d-flex mb-3">
                     <div class="text-primary mr-2">
                         <small class="fas fa-star"></small>
@@ -58,15 +56,25 @@
                     </div>
                     <small class="pt-1">(50 Reviews)</small>
                 </div>
-                <h3 class="font-weight-semi-bold mb-4">$150.00</h3>
+                <h3 class="font-weight-semi-bold mb-4">$<span th:text="${product.price}"></span></h3>
                 <p class="mb-4">Volup erat ipsum diam elitr rebum et dolor. Est nonumy elitr erat diam stet sit clita
                     ea. Sanc invidunt ipsum et, labore clita lorem magna lorem ut. Erat lorem duo dolor no sea nonumy.
                     Accus labore stet, est lorem sit diam sea et justo, amet at lorem et eirmod ipsum diam et rebum kasd
                     rebum.</p>
                 <div class="d-flex mb-3">
                     <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
-                    <form>
-                        <div class="custom-control custom-radio custom-control-inline">
+                    <form class="form-size">
+
+
+                        <div class="custom-control custom-radio custom-control-inline" th:each="size : ${sizes}">
+                            <input type="radio" class="custom-control-input" th:id="'size-' + ${size}" name="size"
+                                th:value="${size}" th:checked="${size == productsVariant[0].size}"
+                                onclick="selectSize(this.value)">
+                            <label class="custom-control-label" th:for="'size-' + ${size}" th:text="${size}"></label>
+                        </div>
+
+
+                        <!-- <div class="custom-control custom-radio custom-control-inline">
                             <input type="radio" class="custom-control-input" id="size-1" name="size">
                             <label class="custom-control-label" for="size-1">XS</label>
                         </div>
@@ -85,13 +93,21 @@
                         <div class="custom-control custom-radio custom-control-inline">
                             <input type="radio" class="custom-control-input" id="size-5" name="size">
                             <label class="custom-control-label" for="size-5">XL</label>
-                        </div>
+                        </div> -->
                     </form>
                 </div>
                 <div class="d-flex mb-4">
                     <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
-                    <form>
-                        <div class="custom-control custom-radio custom-control-inline">
+                    <form class="form-color">
+
+                        <div class="custom-control custom-radio custom-control-inline" th:each="color : ${colors}">
+                            <input type="radio" class="custom-control-input" th:id="'color-' + ${color}" name="color"
+                                th:value="${color}" th:checked="${color == productsVariant[0].color}"
+                                onclick="selectColor(this.value)">
+                            <label class="custom-control-label" th:for="'color-' + ${color}" th:text="${color}"></label>
+                        </div>
+
+                        <!-- <div class="custom-control custom-radio custom-control-inline">
                             <input type="radio" class="custom-control-input" id="color-1" name="color">
                             <label class="custom-control-label" for="color-1">Black</label>
                         </div>
@@ -110,7 +126,8 @@
                         <div class="custom-control custom-radio custom-control-inline">
                             <input type="radio" class="custom-control-input" id="color-5" name="color">
                             <label class="custom-control-label" for="color-5">Green</label>
-                        </div>
+                        </div> -->
+
                     </form>
                 </div>
                 <div class="d-flex align-items-center mb-4 pt-2">
@@ -127,7 +144,9 @@
                             </button>
                         </div>
                     </div>
-                    <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                    <button class="btn btn-primary px-3" onclick="addToCart()">
+                        <i class="fa fa-shopping-cart mr-1"></i> Add To Cart
+                    </button>
                 </div>
                 <div class="d-flex pt-2">
                     <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
@@ -315,5 +334,94 @@
             </div>
         </div>
     </div>
+
+    <script th:inline="javascript">
+
+        /*<![CDATA[*/
+        var productsVariant = /*[[${productsVariant}]]*/[];
+        console.log(productsVariant); // Kiểm tra dữ liệu
+        /*]]>*/
+
+        // Giá trị mặc định ban đầu
+        var selectedSize = document.querySelector("input[name='size']:checked")?.value || "";
+        var selectedColor = document.querySelector("input[name='color']:checked")?.value || "";
+
+        // Hàm cập nhật trạng thái radio
+        function updateAvailableOptions() {
+            document.querySelectorAll("input[name='size']").forEach(sizeInput => {
+                var size = sizeInput.value;
+                var exists = productsVariant.some(p => p.size === size && p.color === selectedColor);
+                sizeInput.disabled = !exists;
+            });
+
+            document.querySelectorAll("input[name='color']").forEach(colorInput => {
+                var color = colorInput.value;
+                var exists = productsVariant.some(p => p.color === color && p.size === selectedSize);
+                colorInput.disabled = !exists;
+            });
+        }
+
+        function updateImages() {
+            var variant = productsVariant.find(p => p.size === selectedSize && p.color === selectedColor);
+            var carouselInner = document.getElementById("carousel-images");
+
+            if (variant) {
+                // Lưu chiều cao hiện tại để tránh layout nhảy
+                var currentHeight = carouselInner.offsetHeight;
+                carouselInner.style.minHeight = currentHeight + "px"; // Giữ kích thước cũ
+
+                // Xóa ảnh cũ nhưng giữ thẻ cha để không bị thay đổi layout
+                carouselInner.innerHTML = "";
+
+                // Thêm ảnh mới
+                variant.images.forEach((image, index) => {
+                    var isActive = index === 0 ? "active" : "";
+                    var imgElement = `
+                <div class="carousel-item ${isActive}">
+                    <img class="w-100 h-100" src="/img/product/${image}" alt="Product Image">
+                </div>
+            `;
+                    carouselInner.innerHTML += imgElement;
+                });
+
+                // Đợi hình ảnh load xong rồi mới reset chiều cao
+                setTimeout(() => {
+                    carouselInner.style.minHeight = "unset"; // Bỏ giới hạn chiều cao sau khi cập nhật ảnh
+                }, 500);
+            }
+        }
+
+        function addToCart() {
+            // Lấy sản phẩm hiện tại đang được chọn dựa trên size và color
+            var variant = productsVariant.find(p => p.size === selectedSize && p.color === selectedColor);
+
+            // Kiểm tra nếu sản phẩm tồn tại và alert ra id
+            if (variant) {
+                alert("Product ID: " + variant.id);  // Hiển thị ID sản phẩm
+            } else {
+                alert("No product selected!");
+            }
+        }
+
+
+        // Gọi cập nhật lần đầu
+        updateAvailableOptions();
+        updateImages();
+
+
+        // Khi chọn size
+        function selectSize(size) {
+            selectedSize = size;
+            updateAvailableOptions();
+        }
+
+        // Khi chọn color
+        function selectColor(color) {
+            selectedColor = color;
+            updateAvailableOptions();
+            updateImages();
+        }
+    </script>
+
     <!-- Products End -->
 </main>
