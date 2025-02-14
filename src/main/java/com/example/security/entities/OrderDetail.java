@@ -30,6 +30,6 @@ public class OrderDetail extends BaseEntity {
     private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
-    private Product product;
+    @JoinColumn(name = "productvariant_id", referencedColumnName = "id")
+    private ProductVariant productVariant;
 }

@@ -137,7 +137,7 @@
                                 <i class="fa fa-minus"></i>
                             </button>
                         </div>
-                        <input type="text" class="form-control bg-secondary text-center" value="1">
+                        <input type="text" class="form-control bg-secondary text-center" name="quantity" value="1">
                         <div class="input-group-btn">
                             <button class="btn btn-primary btn-plus">
                                 <i class="fa fa-plus"></i>
@@ -337,9 +337,11 @@
 
     <script th:inline="javascript">
 
+        var currentUser = /*[[${#authentication.principal}]]*/ null;
         /*<![CDATA[*/
         var productsVariant = /*[[${productsVariant}]]*/[];
-        console.log(productsVariant); // Kiểm tra dữ liệu
+        var product = /*[[${product}]]*/[];
+        console.log(product); // Kiểm tra dữ liệu
         /*]]>*/
 
         // Giá trị mặc định ban đầu
@@ -394,10 +396,41 @@
         function addToCart() {
             // Lấy sản phẩm hiện tại đang được chọn dựa trên size và color
             var variant = productsVariant.find(p => p.size === selectedSize && p.color === selectedColor);
+            var quantity = document.querySelector("input[name='quantity']").value;
 
             // Kiểm tra nếu sản phẩm tồn tại và alert ra id
             if (variant) {
-                alert("Product ID: " + variant.id);  // Hiển thị ID sản phẩm
+                var pro = {
+                    id: variant.id,
+                    imageUrl: variant.images[0],
+                    price: product.price,
+                    quantity: Number(quantity),
+                };
+
+                if (currentUser === "anonymousUser") {
+                    let carts = JSON.parse(localStorage.getItem("carts")) || []; // Lấy giỏ hàng từ localStorage hoặc khởi tạo mảng mới
+
+                    // Tìm sản phẩm trong giỏ hàng
+                    let existingProduct = carts.find(item => item.id === pro.id);
+
+                    if (existingProduct) {
+                        // Nếu sản phẩm đã có, tăng số lượng
+                        existingProduct.quantity += Number(pro.quantity);
+                    } else {
+                        // Nếu chưa có, thêm sản phẩm vào giỏ hàng
+                        carts.push(pro);
+                    }
+                    // Lưu lại giỏ hàng vào localStorage
+                    localStorage.setItem("carts", JSON.stringify(carts));
+                    uploadCart();
+                    console.log("Cập nhật giỏ hàng:", carts);
+                }
+                else {
+                }
+
+                // nếu chưa login thì lưu vào localstorage, nếu rồi thì gọi hàm addtocart nhận vào 1 cartdto
+                // login thành công kiểm tra localsotrage có cart không, nếu có thì gọi hàm addtocart và xóa localstorage
+                alert("Product ID: " + variant.id + "quantity: " + quantity);  // Hiển thị ID sản phẩm
             } else {
                 alert("No product selected!");
             }

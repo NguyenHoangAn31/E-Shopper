@@ -32,6 +32,6 @@ public class CartDetail extends BaseEntity{
     private Cart cart;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
-    private Product product;
+    @JoinColumn(name = "productvariant_id", referencedColumnName = "id")
+    private ProductVariant productVariant;
 }

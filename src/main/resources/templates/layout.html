@@ -84,9 +84,9 @@
                     <i class="fas fa-heart text-primary"></i>
                     <span class="badge">0</span>
                 </a>
-                <a href="" class="btn border">
+                <a th:href="@{/cart}" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge" id="countCart"></span>
                 </a>
             </div>
         </div>
@@ -278,8 +278,6 @@
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 
 
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>

@@ -102,3 +102,10 @@
     
 })(jQuery);
 
+
+function uploadCart(){
+    var countCart = document.getElementById("countCart");
+    console.log("countCart:" + countCart)
+    countCart.innerHTML = JSON.parse(localStorage.getItem("carts")).length;
+}
+uploadCart();

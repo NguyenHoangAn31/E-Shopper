@@ -4,8 +4,6 @@
 
 <main layout:fragment="content">
 
-
-
     <!-- Page Header Start -->
     <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
@@ -34,103 +32,10 @@
                             <th>Remove</th>
                         </tr>
                     </thead>
-                    <tbody class="align-middle">
-                        <tr>
-                            <td class="align-middle"><img src="img/product-1.jpg" alt="" style="width: 50px;"> Colorful
-                                Stylish Shirt</td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary text-center"
-                                        value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-primary"><i
-                                        class="fa fa-times"></i></button></td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><img src="img/product-2.jpg" alt="" style="width: 50px;"> Colorful
-                                Stylish Shirt</td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary text-center"
-                                        value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-primary"><i
-                                        class="fa fa-times"></i></button></td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><img src="img/product-3.jpg" alt="" style="width: 50px;"> Colorful
-                                Stylish Shirt</td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary text-center"
-                                        value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-primary"><i
-                                        class="fa fa-times"></i></button></td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><img src="img/product-4.jpg" alt="" style="width: 50px;"> Colorful
-                                Stylish Shirt</td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary text-center"
-                                        value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-primary"><i
-                                        class="fa fa-times"></i></button></td>
-                        </tr>
+                    <tbody class="align-middle" id="cart-none-login" sec:authorize="isAnonymous()">
+
+                    </tbody>
+                    <tbody class="align-middle" sec:authorize="isAuthenticated()">
                         <tr>
                             <td class="align-middle"><img src="img/product-5.jpg" alt="" style="width: 50px;"> Colorful
                                 Stylish Shirt</td>
@@ -174,26 +79,153 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-3 pt-1">
                             <h6 class="font-weight-medium">Subtotal</h6>
-                            <h6 class="font-weight-medium">$150</h6>
+                            <h6 id="subtotal" class="font-weight-medium">$0</h6>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$10</h6>
+                            <h6 id="shipping" class="font-weight-medium">$10</h6>
                         </div>
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
                         <div class="d-flex justify-content-between mt-2">
                             <h5 class="font-weight-bold">Total</h5>
-                            <h5 class="font-weight-bold">$160</h5>
+                            <h5 id="total" class="font-weight-bold">$0</h5>
                         </div>
                         <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
     <!-- Cart End -->
+    <script>
+        var carts = JSON.parse(localStorage.getItem("carts")) || [];
+        var listItems = document.getElementById("cart-none-login");
 
+        // Clear existing content before adding new rows
+        listItems.innerHTML = "";
+
+
+        function updateCartSummary() {
+            // Calculate Subtotal
+            let subtotal = 0;
+            carts.forEach(function (cart) {
+                subtotal += cart.price * cart.quantity;
+            });
+
+            // Define Shipping (for simplicity, it's static, but could be calculated based on subtotal)
+            let shipping = 10;
+
+            // Calculate Total (Subtotal + Shipping)
+            let total = subtotal + shipping;
+
+            // Update the HTML elements
+            document.getElementById("subtotal").innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById("shipping").innerText = `$${shipping.toFixed(2)}`;
+            document.getElementById("total").innerText = `$${total.toFixed(2)}`;
+        }
+
+
+        // Function to update the cart in localStorage
+        function updateCart() {
+            localStorage.setItem("carts", JSON.stringify(carts));
+        }
+
+        // Function to handle the quantity increase
+        function increaseQuantity(index) {
+            carts[index].quantity += 1;
+            updateCart();
+            renderCart();
+            updateCartSummary();
+        }
+
+        // Function to handle the quantity decrease
+        function decreaseQuantity(index) {
+            if (carts[index].quantity > 1) {
+                carts[index].quantity -= 1;
+                updateCart();
+                renderCart();
+                updateCartSummary();
+            }
+        }
+
+        // Function to handle product removal
+        function removeProduct(index) {
+            carts.splice(index, 1);  // Remove product from the cart array
+            updateCart();
+            renderCart();
+            uploadCart();
+            updateCartSummary();
+
+        }
+
+        // Function to render the cart items dynamically
+        function renderCart() {
+            listItems.innerHTML = "";  // Clear the table body before rendering
+
+            // Loop through the carts array and create a row for each item
+            carts.forEach(function (cart, index) {
+                // Create a table row
+                var row = document.createElement("tr");
+
+                // Product name (column 1)
+                var productCell = document.createElement("td");
+                productCell.classList.add("align-middle");
+                productCell.innerHTML = `<img src="img/${cart.imageUrl}" alt="" style="width: 50px;"> Colorful Stylish Shirt`;
+                row.appendChild(productCell);
+
+                // Price (column 2)
+                var priceCell = document.createElement("td");
+                priceCell.classList.add("align-middle");
+                priceCell.innerText = `$${cart.price}`;
+                row.appendChild(priceCell);
+
+                // Quantity control (column 3)
+                var quantityCell = document.createElement("td");
+                quantityCell.classList.add("align-middle");
+                quantityCell.innerHTML = `
+            <div class="input-group quantity mx-auto" style="width: 100px;">
+                <div class="input-group-btn">
+                    <button class="btn btn-sm btn-primary btn-minus" onclick="decreaseQuantity(${index})">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+                <input type="text" class="form-control form-control-sm bg-secondary text-center" value="${cart.quantity}" readonly>
+                <div class="input-group-btn">
+                    <button class="btn btn-sm btn-primary btn-plus" onclick="increaseQuantity(${index})">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+                row.appendChild(quantityCell);
+
+                // Total price (column 4)
+                var totalPriceCell = document.createElement("td");
+                totalPriceCell.classList.add("align-middle");
+                totalPriceCell.innerText = `$${cart.price * cart.quantity}`;
+                row.appendChild(totalPriceCell);
+
+                // Delete button (column 5)
+                var deleteCell = document.createElement("td");
+                deleteCell.classList.add("align-middle");
+                deleteCell.innerHTML = `<button class="btn btn-sm btn-primary" onclick="removeProduct(${index})"><i class="fa fa-times"></i></button>`;
+                row.appendChild(deleteCell);
+
+                // Append the row to the table body
+                listItems.appendChild(row);
+            });
+        }
+
+        // Initial render
+        renderCart();
+
+        updateCartSummary();
+
+
+
+    </script>
 
 </main>
 

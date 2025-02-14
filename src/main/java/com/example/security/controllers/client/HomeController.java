@@ -103,6 +103,7 @@ public class HomeController {
         model.addAttribute("related", related);
         model.addAttribute("pageTitle", "Product Detail");
 
+
         return "client/detail";
     }
 
