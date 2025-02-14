@@ -35,16 +35,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
-    // private User ResponseToUser(UserResponse dto) {
-    // User user = userRepository.findById(dto.getId()).get();
-    // modelMapper.map(dto, user);
-
-    // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    // LocalDate birthday = LocalDate.parse(dto.getBirthday(), formatter);
-    // user.setBirthday(birthday);
-
-    // return user;
-    // }
 
     @Override
     public UserResponse getUser(String email) {
@@ -56,11 +46,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUser(UserResponse dto) {
         User user = userRepository.findById(dto.getId())
-            .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-    userMapper.updateUserFromDto(dto, user);
-    
-    userRepository.save(user);
+        userMapper.updateUserFromDto(dto, user);
+
+        userRepository.save(user);
     }
 
     @Override

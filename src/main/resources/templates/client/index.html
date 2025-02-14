@@ -77,7 +77,8 @@
             <div class="col-lg-3 col-md-6 pb-1" th:each="category : ${categories}">
                 <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
                     <p class="text-right" th:text="${category.productCount} + ' Products'"></p>
-                    <a th:href="@{/shop(category = ${category.name})}" class="cat-img position-relative overflow-hidden mb-3">
+                    <a th:href="@{/shop(category = ${category.name})}"
+                        class="cat-img position-relative overflow-hidden mb-3">
                         <img class="img-fluid" th:src="@{/img/category/{image}(image=${category.imageUrl})}" alt="" />
                     </a>
                     <h5 class="font-weight-semi-bold m-0" th:text="${category.name}"></h5>
@@ -126,7 +127,8 @@
             <div th:each="product : ${top8Trandy}" class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="card product-item border-0 mb-4">
                     <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                        <img th:src="@{/img/product/{image}(image=${product.imageUrl})}" class="img-fluid w-100" alt="Product Image">
+                        <img th:src="@{/img/product/{image}(image=${product.imageUrl})}" class="img-fluid w-100"
+                            alt="Product Image">
                     </div>
                     <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                         <!-- Tên sản phẩm -->
@@ -140,7 +142,8 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
-                        <a th:href="@{/detail(id=${product.id})}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View
+                        <a th:href="@{/detail(id=${product.id})}" class="btn btn-sm text-dark p-0"><i
+                                class="fas fa-eye text-primary mr-1"></i>View
                             Detail</a>
                         <a th:href="@{/addtocart(id=${product.id})}" class="btn btn-sm text-dark p-0"><i
                                 class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
@@ -182,11 +185,12 @@
             <h2 class="section-title px-5"><span class="px-2">Just Arrived</span></h2>
         </div>
         <div class="row px-xl-5 pb-3">
-           
+
             <div th:each="product : ${top8JustArrived}" class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="card product-item border-0 mb-4">
                     <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                        <img th:src="@{/img/product/{image}(image=${product.imageUrl})}" class="img-fluid w-100" alt="Product Image">
+                        <img th:src="@{/img/product/{image}(image=${product.imageUrl})}" class="img-fluid w-100"
+                            alt="Product Image">
                     </div>
                     <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                         <!-- Tên sản phẩm -->
@@ -200,7 +204,8 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
-                        <a th:href="@{/detail(id=${product.id})}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View
+                        <a th:href="@{/detail(id=${product.id})}" class="btn btn-sm text-dark p-0"><i
+                                class="fas fa-eye text-primary mr-1"></i>View
                             Detail</a>
                         <a th:href="@{/addtocart(id=${product.id})}" class="btn btn-sm text-dark p-0"><i
                                 class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
@@ -247,6 +252,13 @@
         </div>
     </div>
     <!-- Vendor End -->
+
+    <script>
+        // if (window.location.search.includes("loginSuccess=true")) {
+            
+        // }
+
+    </script>
 </main>
 
 </html>

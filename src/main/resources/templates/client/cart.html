@@ -91,8 +91,10 @@
                             <h5 class="font-weight-bold">Total</h5>
                             <h5 id="total" class="font-weight-bold">$0</h5>
                         </div>
-                        <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+                        <a id="checkoutBtn" th:href="@{/checkout}" class="btn btn-block btn-primary my-3 py-3">Proceed
+                            To Checkout</a>
                     </div>
+
                 </div>
 
             </div>
@@ -100,91 +102,103 @@
     </div>
     <!-- Cart End -->
     <script>
-        var carts = JSON.parse(localStorage.getItem("carts")) || [];
-        var listItems = document.getElementById("cart-none-login");
 
-        // Clear existing content before adding new rows
-        listItems.innerHTML = "";
+        var currentUser = /*[[${#authentication.principal}]]*/ null;
 
+        if (currentUser == null) {
 
-        function updateCartSummary() {
-            // Calculate Subtotal
-            let subtotal = 0;
-            carts.forEach(function (cart) {
-                subtotal += cart.price * cart.quantity;
-            });
+            var carts = JSON.parse(localStorage.getItem("carts")) || [];
+            var listItems = document.getElementById("cart-none-login");
 
-            // Define Shipping (for simplicity, it's static, but could be calculated based on subtotal)
-            let shipping = 10;
-
-            // Calculate Total (Subtotal + Shipping)
-            let total = subtotal + shipping;
-
-            // Update the HTML elements
-            document.getElementById("subtotal").innerText = `$${subtotal.toFixed(2)}`;
-            document.getElementById("shipping").innerText = `$${shipping.toFixed(2)}`;
-            document.getElementById("total").innerText = `$${total.toFixed(2)}`;
-        }
+            // Clear existing content before adding new rows
+            listItems.innerHTML = "";
 
 
-        // Function to update the cart in localStorage
-        function updateCart() {
-            localStorage.setItem("carts", JSON.stringify(carts));
-        }
+            function updateCartSummary() {
+                // Calculate Subtotal
+                let subtotal = 0;
+                carts.forEach(function (cart) {
+                    subtotal += cart.price * cart.quantity;
+                });
 
-        // Function to handle the quantity increase
-        function increaseQuantity(index) {
-            carts[index].quantity += 1;
-            updateCart();
-            renderCart();
-            updateCartSummary();
-        }
+                // Define Shipping (for simplicity, it's static, but could be calculated based on subtotal)
+                let shipping = 10;
 
-        // Function to handle the quantity decrease
-        function decreaseQuantity(index) {
-            if (carts[index].quantity > 1) {
-                carts[index].quantity -= 1;
+                // Calculate Total (Subtotal + Shipping)
+                let total = subtotal + shipping;
+
+                // Update the HTML elements
+                document.getElementById("subtotal").innerText = `$${subtotal.toFixed(2)}`;
+                document.getElementById("shipping").innerText = `$${shipping.toFixed(2)}`;
+                document.getElementById("total").innerText = `$${total.toFixed(2)}`;
+            }
+
+
+            // Function to update the cart in localStorage
+            function updateCart() {
+                localStorage.setItem("carts", JSON.stringify(carts));
+            }
+
+            // Function to handle the quantity increase
+            function increaseQuantity(index) {
+                carts[index].quantity += 1;
                 updateCart();
                 renderCart();
                 updateCartSummary();
             }
-        }
 
-        // Function to handle product removal
-        function removeProduct(index) {
-            carts.splice(index, 1);  // Remove product from the cart array
-            updateCart();
-            renderCart();
-            uploadCart();
-            updateCartSummary();
+            // Function to handle the quantity decrease
+            function decreaseQuantity(index) {
+                if (carts[index].quantity > 1) {
+                    carts[index].quantity -= 1;
+                    updateCart();
+                    renderCart();
+                    updateCartSummary();
+                }
+            }
 
-        }
+            function loadCheckout(){
+                var checkoutBtn = document.getElementById("checkoutBtn");
+                if (carts.length < 1) {
+                    checkoutBtn.style.pointerEvents = 'none'
+                }
+            }
+            // Function to handle product removal
+            function removeProduct(index) {
+                carts.splice(index, 1);  // Remove product from the cart array
+                updateCart();
+                renderCart();
+                uploadCart();
+                updateCartSummary();
+                loadCheckout()
 
-        // Function to render the cart items dynamically
-        function renderCart() {
-            listItems.innerHTML = "";  // Clear the table body before rendering
+            }
 
-            // Loop through the carts array and create a row for each item
-            carts.forEach(function (cart, index) {
-                // Create a table row
-                var row = document.createElement("tr");
+            // Function to render the cart items dynamically
+            function renderCart() {
+                listItems.innerHTML = "";  // Clear the table body before rendering
 
-                // Product name (column 1)
-                var productCell = document.createElement("td");
-                productCell.classList.add("align-middle");
-                productCell.innerHTML = `<img src="img/${cart.imageUrl}" alt="" style="width: 50px;"> Colorful Stylish Shirt`;
-                row.appendChild(productCell);
+                // Loop through the carts array and create a row for each item
+                carts.forEach(function (cart, index) {
+                    // Create a table row
+                    var row = document.createElement("tr");
 
-                // Price (column 2)
-                var priceCell = document.createElement("td");
-                priceCell.classList.add("align-middle");
-                priceCell.innerText = `$${cart.price}`;
-                row.appendChild(priceCell);
+                    // Product name (column 1)
+                    var productCell = document.createElement("td");
+                    productCell.classList.add("align-middle");
+                    productCell.innerHTML = `<img src="img/${cart.imageUrl}" alt="" style="width: 50px;"> Colorful Stylish Shirt`;
+                    row.appendChild(productCell);
 
-                // Quantity control (column 3)
-                var quantityCell = document.createElement("td");
-                quantityCell.classList.add("align-middle");
-                quantityCell.innerHTML = `
+                    // Price (column 2)
+                    var priceCell = document.createElement("td");
+                    priceCell.classList.add("align-middle");
+                    priceCell.innerText = `$${cart.price}`;
+                    row.appendChild(priceCell);
+
+                    // Quantity control (column 3)
+                    var quantityCell = document.createElement("td");
+                    quantityCell.classList.add("align-middle");
+                    quantityCell.innerHTML = `
             <div class="input-group quantity mx-auto" style="width: 100px;">
                 <div class="input-group-btn">
                     <button class="btn btn-sm btn-primary btn-minus" onclick="decreaseQuantity(${index})">
@@ -199,31 +213,32 @@
                 </div>
             </div>
         `;
-                row.appendChild(quantityCell);
+                    row.appendChild(quantityCell);
 
-                // Total price (column 4)
-                var totalPriceCell = document.createElement("td");
-                totalPriceCell.classList.add("align-middle");
-                totalPriceCell.innerText = `$${cart.price * cart.quantity}`;
-                row.appendChild(totalPriceCell);
+                    // Total price (column 4)
+                    var totalPriceCell = document.createElement("td");
+                    totalPriceCell.classList.add("align-middle");
+                    totalPriceCell.innerText = `$${cart.price * cart.quantity}`;
+                    row.appendChild(totalPriceCell);
 
-                // Delete button (column 5)
-                var deleteCell = document.createElement("td");
-                deleteCell.classList.add("align-middle");
-                deleteCell.innerHTML = `<button class="btn btn-sm btn-primary" onclick="removeProduct(${index})"><i class="fa fa-times"></i></button>`;
-                row.appendChild(deleteCell);
+                    // Delete button (column 5)
+                    var deleteCell = document.createElement("td");
+                    deleteCell.classList.add("align-middle");
+                    deleteCell.innerHTML = `<button class="btn btn-sm btn-primary" onclick="removeProduct(${index})"><i class="fa fa-times"></i></button>`;
+                    row.appendChild(deleteCell);
 
-                // Append the row to the table body
-                listItems.appendChild(row);
-            });
+                    // Append the row to the table body
+                    listItems.appendChild(row);
+                });
+            }
+
+            // Initial render
+            renderCart();
+            loadCheckout()
+
+            updateCartSummary();
+
         }
-
-        // Initial render
-        renderCart();
-
-        updateCartSummary();
-
-
 
     </script>
 

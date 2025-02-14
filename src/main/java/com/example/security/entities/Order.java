@@ -31,16 +31,32 @@ public class Order extends BaseEntity{
 
     private double totalPrice;
 
+    private String status;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String email;
+
+    private String phone;
+
     private String address;
 
-    private String status;
-  
+    private String ward;
+
+    private String district;
+
+    private String provence;
+
+    private String paymentMethod;
+
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderDetail> orderDetails = new ArrayList<>();
+    private List<OrderDetail> orderDetails;
 
     
 }

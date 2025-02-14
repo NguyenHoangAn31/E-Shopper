@@ -1,27 +1,29 @@
 package com.example.security.controllers.client;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.security.dto.ProductVariant.ProductVariantResponse;
+import com.example.security.dto.order.OrderRequest;
 import com.example.security.dto.product.ProductResponse;
 import com.example.security.dto.user.UserRequestCreate;
 import com.example.security.dto.user.UserResponse;
+import com.example.security.services.cartdetail.CartDetailService;
 import com.example.security.services.category.CategoryService;
 import com.example.security.services.product.ProductService;
 import com.example.security.services.productvariant.ProductVariantService;
@@ -43,6 +45,9 @@ public class HomeController {
 
     @Autowired
     private ProductVariantService productVariantService;
+
+    @Autowired
+    private CartDetailService cartDetailService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -103,37 +108,39 @@ public class HomeController {
         model.addAttribute("related", related);
         model.addAttribute("pageTitle", "Product Detail");
 
-
         return "client/detail";
     }
 
     @GetMapping("/cart")
-    public String cart(Model model) {
+    public String cart(Model model, Authentication authentication) {
         model.addAttribute("pageTitle", "Cart");
+        // if (authentication != null && authentication.isAuthenticated()) {
+        // List<CartResponse> cartItems =
+        // cartService.getCardByEmail(authentication.getName());
+        // model.addAttribute("cart", cartItems);
+        // }
         return "client/cart";
     }
 
+    @GetMapping("/checkout")
+    public String checkout(Model model) {
+        model.addAttribute("pageTitle", "Checkout");
+        return "client/checkout";
+    }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<String> checkoutProcess(@RequestBody OrderRequest orderRequest) {
+        System.out.println("Dữ liệu nhận được từ frontend: " + orderRequest);
+
+        // Xử lý logic đặt hàng ở đây (Lưu vào DB, kiểm tra dữ liệu, ...)
+        
+        return ResponseEntity.ok("Đặt hàng thành công!");
+    }
+
     @GetMapping("/profile")
-    public String profile(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public String profile(Model model, Authentication authentication) {
 
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            // Đăng nhập bằng username/password
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String username = userDetails.getUsername();
-
-            System.out.println("Đăng nhập bằng tài khoản: " + username);
-            model.addAttribute("user", userService.getUser(username));
-
-        } else if (authentication instanceof OAuth2AuthenticationToken) {
-            // Đăng nhập bằng OAuth2
-            OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
-            String email = oauthUser.getAttribute("email"); // Lấy email
-
-            System.out.println("Đăng nhập bằng OAuth2: " + email + " - " + email);
-            model.addAttribute("user", userService.getUser(email));
-
-        }
+        model.addAttribute("user", userService.getUser(authentication.getName()));
 
         model.addAttribute("pageTitle", "Profile");
         return "client/profile";
@@ -170,7 +177,6 @@ public class HomeController {
         System.out.println("User Details: " + dto);
 
         if (bindingResult.hasErrors()) {
-            // model.addAttribute("errorMessage", "Please correct the errors in the form.");
             return "client/register";
         }
 

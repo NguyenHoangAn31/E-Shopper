@@ -52,10 +52,10 @@ public class User extends BaseEntity {
 	private List<Role> roles;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Cart> carts = new ArrayList<>();
+	private List<Cart> carts;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Order> orders = new ArrayList<>();
+	private List<Order> orders;
 
 	public List<String> getAuthorities() {
 		return roles.stream().map(Role::getShortName).toList();
