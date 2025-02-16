@@ -30,8 +30,7 @@ public class PaypalService {
             String intent,
             String description,
             String cancelUrl,
-            String successUrl
-    ) throws PayPalRESTException {
+            String successUrl) throws PayPalRESTException {
         Amount amount = new Amount();
         amount.setCurrency(currency);
         amount.setTotal(String.format(Locale.forLanguageTag(currency), "%.2f", total)); // 9.99$ - 9,99€
@@ -51,19 +50,30 @@ public class PaypalService {
         payment.setPayer(payer);
         payment.setTransactions(transactions);
 
+        // ✅ Luôn tạo mới RedirectUrls để tránh NullPointerException
         RedirectUrls redirectUrls = new RedirectUrls();
-        redirectUrls.setCancelUrl(cancelUrl);
+        redirectUrls.setCancelUrl(cancelUrl); // Chưa có paymentId
         redirectUrls.setReturnUrl(successUrl);
-
         payment.setRedirectUrls(redirectUrls);
 
-        return payment.create(apiContext);
+        // ✅ Gửi request tạo payment
+        Payment createdPayment = payment.create(apiContext);
+
+        // ✅ Cập nhật lại cancelUrl với paymentId
+        String updatedCancelUrl = cancelUrl + "?paymentId=" + createdPayment.getId();
+
+        // 🔥 Cách sửa lỗi: Tạo mới RedirectUrls thay vì gọi `getRedirectUrls()`
+        RedirectUrls updatedUrls = new RedirectUrls();
+        updatedUrls.setCancelUrl(updatedCancelUrl);
+        updatedUrls.setReturnUrl(successUrl);
+        createdPayment.setRedirectUrls(updatedUrls);
+
+        return createdPayment;
     }
 
     public Payment executePayment(
             String paymentId,
-            String payerId
-    ) throws PayPalRESTException {
+            String payerId) throws PayPalRESTException {
         Payment payment = new Payment();
         payment.setId(paymentId);
 

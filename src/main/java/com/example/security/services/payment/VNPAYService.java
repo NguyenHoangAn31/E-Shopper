@@ -19,12 +19,11 @@ import org.springframework.stereotype.Service;
 import com.example.security.configs.VNPAYConfig;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class VNPAYService { 
 
-    public String createOrder(HttpServletRequest request, int amount, String orderInfor, String urlReturn) {
+    public Map<String, String> createOrder(HttpServletRequest request, int amount, String orderInfor, String urlReturn) {
         //Các bạn có thể tham khảo tài liệu hướng dẫn và điều chỉnh các tham số
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -60,6 +59,7 @@ public class VNPAYService {
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
+
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
@@ -92,7 +92,11 @@ public class VNPAYService {
         String vnp_SecureHash = VNPAYConfig.hmacSHA512(salt, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = VNPAYConfig.vnp_PayUrl + "?" + queryUrl;
-        return paymentUrl;
+
+        Map<String, String> result = new HashMap<>();
+        result.put("paymentUrl", paymentUrl);
+        result.put("key", vnp_TxnRef);
+        return result;
     }
 
     public int orderReturn(HttpServletRequest request){

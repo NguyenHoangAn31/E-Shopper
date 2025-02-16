@@ -3,8 +3,10 @@ package com.example.security.controllers.client;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.example.security.dto.order.OrderRequest;
+import com.example.security.entities.Order;
 import com.example.security.services.order.OrderService;
 import com.example.security.services.payment.PaypalService;
 import com.example.security.services.payment.VNPAYService;
@@ -22,6 +25,7 @@ import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api")
@@ -38,18 +42,25 @@ public class CheckoutController {
 
     double exchangeRate = 24000; // Ví dụ: 1 USD = 24,000 VND
 
-    String cancelUrl = "http://localhost:8080/checkout?status=canceled";
-    String successUrl = "http://localhost:8080?status=success";
+    String cancelUrl = "http://localhost:8080/api/paypal/cancel";
+    String successUrl = "http://localhost:8080/api/paypal/success";
+
+    Map<String, OrderRequest> orderMap = new HashMap<>();
 
     @PostMapping("/checkout")
     public String checkoutProcess(@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
 
         try {
             if (orderRequest.getPaymentMethod().equals("VN Pay")) {
+
                 String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-                String vnpayUrl = vnpayService.createOrder(request, (int) (orderRequest.getTotalPrice() * exchangeRate),
+                Map<String, String> vnpayUrl = vnpayService.createOrder(request,
+                        (int) (orderRequest.getTotalPrice() * exchangeRate),
                         orderRequest.getDescription(), baseUrl);
-                return vnpayUrl;
+                String key = vnpayUrl.get("key");
+                String paymentUrl = vnpayUrl.get("paymentUrl");
+                orderMap.put(key, orderRequest);
+                return paymentUrl;
 
             } else if (orderRequest.getPaymentMethod().equals("Paypal")) {
                 try {
@@ -64,6 +75,7 @@ public class CheckoutController {
                             successUrl);
                     for (Links link : payment.getLinks()) {
                         if (link.getRel().equals("approval_url")) {
+                            orderMap.put(payment.getId(), orderRequest);
                             return link.getHref();
                         }
                     }
@@ -79,12 +91,48 @@ public class CheckoutController {
         }
     }
 
+    @GetMapping("/paypal/success")
+    public void successPay(
+            @RequestParam("paymentId") String paymentId,
+            @RequestParam("PayerID") String payerId,
+            HttpServletResponse response) {
+        try {
+            Payment payment = paypalService.executePayment(paymentId, payerId);
+            if (payment.getState().equals("approved")) {
+                orderService.checkoutProcess(orderMap.get(paymentId));
+                orderMap.remove(paymentId);
+                response.sendRedirect("http://localhost:8080?status=success");
+                return;
+            }
+        } catch (PayPalRESTException | IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            response.sendRedirect("http://localhost:8080/checkout?status=failed");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @GetMapping("/paypal/cancel")
+    public void paypalCancel(
+            HttpServletResponse response) throws IOException {
+       
+        response.sendRedirect("http://localhost:8080/checkout?status=canceled");
+    }
+
     @GetMapping("/vnpay/vnpay-payment-return")
     public RedirectView paymentCompleted(HttpServletRequest request) {
         int paymentStatus = vnpayService.orderReturn(request);
 
-        request.getParameterMap()
-                .forEach((key, value) -> System.out.println("Param: " + key + " = " + String.join(", ", value)));
+        String txnRef = request.getParameter("vnp_TxnRef");
+
+        if (paymentStatus == 1) {
+            OrderRequest o = orderMap.get(txnRef);
+            orderService.checkoutProcess(o);
+        }
+
+        orderMap.remove(txnRef);
 
         // Tạo URL để redirect về frontend
         String redirectUrl = "http://localhost:8080" + (paymentStatus == 1 ? "" : "/checkout") + "?status="
