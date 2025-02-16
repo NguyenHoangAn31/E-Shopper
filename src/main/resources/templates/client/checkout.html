@@ -66,6 +66,11 @@
                             <label>Province</label>
                             <input class="form-control" type="text" placeholder="New York">
                         </div>
+                        <div class="col-md-12 form-group">
+                            <label>Message</label>
+                            <textarea id="message" class="form-control" rows="5"
+                                placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
+                        </div>
 
                         <div class="col-md-12 form-group">
                             <div class="custom-control custom-checkbox">
@@ -201,6 +206,7 @@
 
             // Lấy dữ liệu giỏ hàng từ localStorage
             let cartItems = JSON.parse(localStorage.getItem("carts")) || [];
+            let subtotal = 0;
 
 
             document.addEventListener("DOMContentLoaded", function () {
@@ -219,7 +225,6 @@
                     return;
                 }
 
-                let subtotal = 0;
 
                 cartItems.forEach(item => {
                     let itemElement = document.createElement("div");
@@ -244,7 +249,7 @@
 
                     // Lấy dữ liệu từ các trường input
                     let checkoutData = {
-                        user_id: currentUser == null ? null:currentUser,
+                        user_id: currentUser == null ? null : currentUser,
                         firstName: document.querySelector('input[placeholder="John"]').value.trim(),
                         lastName: document.querySelector('input[placeholder="Doe"]').value.trim(),
                         email: document.querySelector('input[placeholder="example@email.com"]').value.trim(),
@@ -254,11 +259,13 @@
                         district: document.querySelectorAll('input[placeholder="New York"]')[1].value.trim(),
                         province: document.querySelectorAll('input[placeholder="New York"]')[2].value.trim(),
                         products: cartItems,
-                        paymentMethod: document.querySelector('input[name="payment"]:checked').nextElementSibling.innerText.trim()
+                        paymentMethod: document.querySelector('input[name="payment"]:checked').nextElementSibling.innerText.trim(),
+                        totalPrice: parseFloat(subtotal + 10),
+                        description: document.getElementById("message").value
                     };
 
                     console.log("Dữ liệu checkout:", checkoutData);
-
+                    console.log("paymentMethod:", checkoutData.paymentMethod);
 
                     fetch("http://localhost:8080/api/checkout", {
                         method: "POST",
@@ -267,14 +274,22 @@
                         },
                         body: JSON.stringify(checkoutData)
                     })
-                        .then(response => response.json())
+                        .then(response => response.text())
                         .then(data => {
-                            console.log("Phản hồi từ server:", data);
-                            alert("Đặt hàng thành công!");
-                            localStorage.removeItem("cart"); // Xóa giỏ hàng sau khi đặt hàng
+                            if (checkoutData.paymentMethod == "Paypal") {
+                                window.location.href = data; // Chuyển hướng người dùng tới PayPal
+                            }
+                            if (checkoutData.paymentMethod == "VN Pay") {
+                                window.location.href = data; // Chuyển hướng người dùng tới PayPal
+                            }
+                            else if (checkoutData.paymentMethod == "COD") {
+                                window.location.href = "/";
+
+                            }
+
                         })
                         .catch(error => {
-                            console.error("Lỗi khi gửi dữ liệu:", error);
+                            console.error("error:", error);
                             alert("Có lỗi xảy ra, vui lòng thử lại!");
                         });
 

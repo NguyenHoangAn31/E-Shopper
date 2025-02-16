@@ -25,6 +25,7 @@ import com.example.security.dto.user.UserRequestCreate;
 import com.example.security.dto.user.UserResponse;
 import com.example.security.services.cartdetail.CartDetailService;
 import com.example.security.services.category.CategoryService;
+import com.example.security.services.order.OrderService;
 import com.example.security.services.product.ProductService;
 import com.example.security.services.productvariant.ProductVariantService;
 import com.example.security.services.user.UserService;
@@ -48,6 +49,9 @@ public class HomeController {
 
     @Autowired
     private CartDetailService cartDetailService;
+
+    @Autowired
+    private OrderService orderService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -125,17 +129,12 @@ public class HomeController {
     @GetMapping("/checkout")
     public String checkout(Model model) {
         model.addAttribute("pageTitle", "Checkout");
+        model.addAttribute("order", new OrderRequest());
         return "client/checkout";
     }
+  
 
-    @PostMapping("/checkout")
-    public ResponseEntity<String> checkoutProcess(@RequestBody OrderRequest orderRequest) {
-        System.out.println("Dữ liệu nhận được từ frontend: " + orderRequest);
 
-        // Xử lý logic đặt hàng ở đây (Lưu vào DB, kiểm tra dữ liệu, ...)
-        
-        return ResponseEntity.ok("Đặt hàng thành công!");
-    }
 
     @GetMapping("/profile")
     public String profile(Model model, Authentication authentication) {

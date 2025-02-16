@@ -27,7 +27,7 @@ public class Order extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private LocalDateTime orderDateTime;
+    private LocalDateTime orderDateTime = LocalDateTime.now();
 
     private double totalPrice;
 
@@ -47,12 +47,12 @@ public class Order extends BaseEntity{
 
     private String district;
 
-    private String provence;
+    private String province;
 
     private String paymentMethod;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

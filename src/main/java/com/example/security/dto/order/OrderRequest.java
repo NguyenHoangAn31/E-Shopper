@@ -21,7 +21,10 @@ public class OrderRequest {
     private String ward;
     private String district;
     private String province;
+    private String description;
+
     private String paymentMethod;
+    private double totalPrice;
     List<ProductCartDetailResponse> products;
 
 }
