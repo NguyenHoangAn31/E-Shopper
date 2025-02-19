@@ -103,9 +103,15 @@
 })(jQuery);
 
 
-function uploadCart(){
+function uploadCart() {
     var countCart = document.getElementById("countCart");
-    console.log("countCart:" + countCart)
-    countCart.innerHTML = JSON.parse(localStorage.getItem("carts")).length;
+    console.log("countCart:", countCart);
+
+    var carts = JSON.parse(localStorage.getItem("carts")) || [];
+
+    if (carts.length > 0) {
+        countCart.innerHTML = carts.length;
+    }
 }
+
 uploadCart();

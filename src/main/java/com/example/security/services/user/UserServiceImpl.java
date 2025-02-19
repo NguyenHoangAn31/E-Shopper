@@ -35,7 +35,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
-
     @Override
     public UserResponse getUser(String email) {
         User user = userRepository.findByEmail(email)
@@ -111,6 +110,12 @@ public class UserServiceImpl implements UserService {
                 })
                 .forEach(principal -> sessionRegistry.getAllSessions(principal, false)
                         .forEach(session -> session.expireNow()));
+    }
+
+    public int getIdUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(User::getId)
+                .orElse(0);
     }
 
 }

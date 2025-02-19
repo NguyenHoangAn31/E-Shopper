@@ -33,13 +33,14 @@
                         </tr>
                     </thead>
                     <tbody class="align-middle" id="cart-none-login" sec:authorize="isAnonymous()">
-
                     </tbody>
+
+
                     <tbody class="align-middle" sec:authorize="isAuthenticated()">
-                        <tr>
-                            <td class="align-middle"><img src="img/product-5.jpg" alt="" style="width: 50px;"> Colorful
-                                Stylish Shirt</td>
-                            <td class="align-middle">$150</td>
+                        <tr th:each="cart : ${carts}">
+                            <td class="align-middle"><img th:src="@{/img/product/{image}(image=${cart.imageUrl})}"
+                                    alt="" style="width: 50px;" th:text="${cart.name}"></td>
+                            <td class="align-middle" th:text="'$' + ${cart.price}"></td>
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px;">
                                     <div class="input-group-btn">
@@ -48,7 +49,7 @@
                                         </button>
                                     </div>
                                     <input type="text" class="form-control form-control-sm bg-secondary text-center"
-                                        value="1">
+                                        th:value="${cart.quantity}">
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-primary btn-plus">
                                             <i class="fa fa-plus"></i>
@@ -56,7 +57,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="align-middle">$150</td>
+                            <td class="align-middle"><span th:text="'$' + ${cart.price * cart.quantity}"></span></td>
                             <td class="align-middle"><button class="btn btn-sm btn-primary"><i
                                         class="fa fa-times"></i></button></td>
                         </tr>
@@ -101,11 +102,11 @@
         </div>
     </div>
     <!-- Cart End -->
-    <script>
+    <script th:inline="javascript">
 
         var currentUser = /*[[${#authentication.principal}]]*/ null;
 
-        if (currentUser == null) {
+        if (currentUser == "anonymousUser") {
 
             var carts = JSON.parse(localStorage.getItem("carts")) || [];
             var listItems = document.getElementById("cart-none-login");
@@ -157,7 +158,7 @@
                 }
             }
 
-            function loadCheckout(){
+            function loadCheckout() {
                 var checkoutBtn = document.getElementById("checkoutBtn");
                 if (carts.length < 1) {
                     checkoutBtn.style.pointerEvents = 'none'
@@ -171,7 +172,6 @@
                 uploadCart();
                 updateCartSummary();
                 loadCheckout()
-
             }
 
             // Function to render the cart items dynamically
@@ -186,7 +186,7 @@
                     // Product name (column 1)
                     var productCell = document.createElement("td");
                     productCell.classList.add("align-middle");
-                    productCell.innerHTML = `<img src="img/${cart.imageUrl}" alt="" style="width: 50px;"> Colorful Stylish Shirt`;
+                    productCell.innerHTML = `<img src="img/${cart.imageUrl}" alt="" style="width: 50px;"> ${cart.name}`;
                     row.appendChild(productCell);
 
                     // Price (column 2)
@@ -199,20 +199,20 @@
                     var quantityCell = document.createElement("td");
                     quantityCell.classList.add("align-middle");
                     quantityCell.innerHTML = `
-            <div class="input-group quantity mx-auto" style="width: 100px;">
-                <div class="input-group-btn">
-                    <button class="btn btn-sm btn-primary btn-minus" onclick="decreaseQuantity(${index})">
-                        <i class="fa fa-minus"></i>
-                    </button>
+                <div class="input-group quantity mx-auto" style="width: 100px;">
+                    <div class="input-group-btn">
+                        <button class="btn btn-sm btn-primary btn-minus" onclick="decreaseQuantity(${index})">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                    <input type="text" class="form-control form-control-sm bg-secondary text-center" value="${cart.quantity}" readonly>
+                    <div class="input-group-btn">
+                        <button class="btn btn-sm btn-primary btn-plus" onclick="increaseQuantity(${index})">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
                 </div>
-                <input type="text" class="form-control form-control-sm bg-secondary text-center" value="${cart.quantity}" readonly>
-                <div class="input-group-btn">
-                    <button class="btn btn-sm btn-primary btn-plus" onclick="increaseQuantity(${index})">
-                        <i class="fa fa-plus"></i>
-                    </button>
-                </div>
-            </div>
-        `;
+            `;
                     row.appendChild(quantityCell);
 
                     // Total price (column 4)
@@ -231,13 +231,23 @@
                     listItems.appendChild(row);
                 });
             }
-
             // Initial render
             renderCart();
             loadCheckout()
-
             updateCartSummary();
+        }
+        else {
+            var carts = /*[[${carts}]]*/[];
+            var total = 0;
 
+            for (var i = 0; i < carts.length; i++) {
+                total += carts[i].price * carts[i].quantity;
+            }
+         
+         
+            document.getElementById("subtotal").innerText = `$${total.toFixed(2)}`;
+            document.getElementById("shipping").innerText = `$10`;
+            document.getElementById("total").innerText = `$${(total + 10).toFixed(2)}`;
         }
 
     </script>

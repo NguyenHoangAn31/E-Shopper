@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +28,7 @@ import com.paypal.base.rest.PayPalRESTException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -48,8 +51,13 @@ public class CheckoutController {
     Map<String, OrderRequest> orderMap = new HashMap<>();
 
     @PostMapping("/checkout")
-    public String checkoutProcess(@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
-
+    public String checkoutProcess(@Valid @RequestBody OrderRequest orderRequest, BindingResult bindingResult,
+            HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessages = new StringBuilder();
+            bindingResult.getAllErrors().forEach(error -> errorMessages.append(error.getDefaultMessage()).append("\n"));
+            return "notblank";
+        }
         try {
             if (orderRequest.getPaymentMethod().equals("VN Pay")) {
 
@@ -101,14 +109,14 @@ public class CheckoutController {
             if (payment.getState().equals("approved")) {
                 orderService.checkoutProcess(orderMap.get(paymentId));
                 orderMap.remove(paymentId);
-                response.sendRedirect("http://localhost:8080?status=success");
+                response.sendRedirect("http://localhost:8080?orderstatus=success");
                 return;
             }
         } catch (PayPalRESTException | IOException e) {
             e.printStackTrace();
         }
         try {
-            response.sendRedirect("http://localhost:8080/checkout?status=failed");
+            response.sendRedirect("http://localhost:8080/checkout?orderstatus=failed");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,8 +125,8 @@ public class CheckoutController {
     @GetMapping("/paypal/cancel")
     public void paypalCancel(
             HttpServletResponse response) throws IOException {
-       
-        response.sendRedirect("http://localhost:8080/checkout?status=canceled");
+
+        response.sendRedirect("http://localhost:8080/checkout?orderstatus=canceled");
     }
 
     @GetMapping("/vnpay/vnpay-payment-return")
@@ -135,7 +143,7 @@ public class CheckoutController {
         orderMap.remove(txnRef);
 
         // Tạo URL để redirect về frontend
-        String redirectUrl = "http://localhost:8080" + (paymentStatus == 1 ? "" : "/checkout") + "?status="
+        String redirectUrl = "http://localhost:8080" + (paymentStatus == 1 ? "" : "/checkout") + "?orderstatus="
                 + (paymentStatus == 1 ? "success" : "canceled");
 
         // Trả về RedirectView

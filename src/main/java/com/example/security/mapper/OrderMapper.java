@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import com.example.security.dto.cart.ProductCartDetailResponse;
+import com.example.security.dto.cart.CartDetailResponse;
 import com.example.security.dto.order.OrderRequest;
 import com.example.security.entities.Order;
 import com.example.security.entities.OrderDetail;
@@ -22,7 +22,6 @@ public interface OrderMapper {
     @Mapping(target = "id", ignore = true) // ID tự động sinh
     @Mapping(target = "orderDateTime", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "status", constant = "PENDING") // Trạng thái mặc định
-    @Mapping(target = "user", expression = "java(mapUser(request.getUser_id()))")
     Order toEntity(OrderRequest request);
 
 
@@ -33,15 +32,15 @@ public interface OrderMapper {
     }
 
   
-    default User mapUser(int userId) {
-        if (userId == 0)
-            return null;
-        User user = new User();
-        user.setId(userId);
-        return user;
-    }
+    // default User mapUser(int userId) {
+    //     if (userId == 0)
+    //         return null;
+    //     User user = new User();
+    //     user.setId(userId);
+    //     return user;
+    // }
 
-    default List<OrderDetail> mapOrderDetails(List<ProductCartDetailResponse> products, Order order) {
+    default List<OrderDetail> mapOrderDetails(List<CartDetailResponse> products, Order order) {
         return products.stream()
                 .map(product -> {
                     OrderDetail detail = new OrderDetail();

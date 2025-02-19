@@ -338,6 +338,7 @@
     <script th:inline="javascript">
 
         var currentUser = /*[[${#authentication.principal}]]*/ null;
+
         /*<![CDATA[*/
         var productsVariant = /*[[${productsVariant}]]*/[];
         var product = /*[[${product}]]*/[];
@@ -404,6 +405,9 @@
                     id: variant.id,
                     imageUrl: variant.images[0],
                     price: product.price,
+                    name: product.name,
+                    color: selectedColor,
+                    size: selectedSize,
                     quantity: Number(quantity),
                 };
 

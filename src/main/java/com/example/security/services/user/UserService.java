@@ -10,4 +10,5 @@ public interface UserService {
     public boolean checkExistAccount(String email);
     public void register(UserRequestCreate dto);
     public void lockUser(String email);
+    public int getIdUserByEmail(String email);
 }

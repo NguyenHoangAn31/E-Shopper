@@ -86,7 +86,8 @@
                 </a>
                 <a th:href="@{/cart}" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge" id="countCart"></span>
+                    <span class="badge" id="countCartLogin" sec:authorize="isAuthenticated()" th:text="${session.cart}"></span>
+                    <span class="badge" id="countCart" sec:authorize="isAnonymous()" ></span>
                 </a>
             </div>
         </div>

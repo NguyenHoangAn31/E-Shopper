@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import com.example.security.filter.CustomLoginSuccessHandler;
 import com.example.security.filter.LoginAttemptFilter;
 import com.example.security.services.authentication.UserDetailsServiceImpl;
 import com.example.security.services.user.LoginAttemptService;
@@ -29,6 +30,9 @@ public class SecurityConfig {
 
         @Autowired
         private LoginAttemptService loginAttemptService;
+
+        @Autowired
+        private CustomLoginSuccessHandler customLoginSuccessHandler;
 
         @Bean
         public SessionRegistry sessionRegistry() {
@@ -50,7 +54,8 @@ public class SecurityConfig {
                                                 .loginPage("/login")
                                                 .usernameParameter("email")
                                                 .passwordParameter("password")
-                                                .defaultSuccessUrl("/?loginSuccess=true", true)
+                                                // .defaultSuccessUrl("/?loginSuccess=true", true)
+                                                .successHandler(customLoginSuccessHandler)
                                                 // .failureUrl("/login?error=true")
                                                 .failureHandler((request, response, exception) -> {
                                                         System.out.println("filer check 2");
@@ -62,7 +67,8 @@ public class SecurityConfig {
 
                                 .oauth2Login(oauth2 -> oauth2
                                                 .loginPage("/oauth2/authorization/google")
-                                                .defaultSuccessUrl("/?loginSuccess=true", true)
+                                                // .defaultSuccessUrl("/?loginSuccess=true", true)
+                                                .successHandler(customLoginSuccessHandler)
                                                 .failureHandler((request, response, exception) -> {
                                                         response.sendRedirect("/login?error=blocked");
 

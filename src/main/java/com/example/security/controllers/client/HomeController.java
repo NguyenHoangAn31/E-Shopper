@@ -1,5 +1,6 @@
 package com.example.security.controllers.client;
 
+import java.net.http.HttpRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,22 +15,27 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.security.dto.ProductVariant.ProductVariantResponse;
+import com.example.security.dto.cart.CartDetailResponse;
+import com.example.security.dto.cart.CartRequest;
 import com.example.security.dto.order.OrderRequest;
 import com.example.security.dto.product.ProductResponse;
 import com.example.security.dto.user.UserRequestCreate;
 import com.example.security.dto.user.UserResponse;
-import com.example.security.services.cartdetail.CartDetailService;
+import com.example.security.services.cart.CartService;
 import com.example.security.services.category.CategoryService;
 import com.example.security.services.order.OrderService;
 import com.example.security.services.product.ProductService;
 import com.example.security.services.productvariant.ProductVariantService;
 import com.example.security.services.user.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -48,10 +54,7 @@ public class HomeController {
     private ProductVariantService productVariantService;
 
     @Autowired
-    private CartDetailService cartDetailService;
-
-    @Autowired
-    private OrderService orderService;
+    private CartService cartService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -59,6 +62,7 @@ public class HomeController {
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("top8Trandy", productService.getTop8Trandy());
         model.addAttribute("top8JustArrived", productService.getTop8JustArrived());
+
         return "client/index";
     }
 
@@ -118,23 +122,32 @@ public class HomeController {
     @GetMapping("/cart")
     public String cart(Model model, Authentication authentication) {
         model.addAttribute("pageTitle", "Cart");
-        // if (authentication != null && authentication.isAuthenticated()) {
-        // List<CartResponse> cartItems =
-        // cartService.getCardByEmail(authentication.getName());
-        // model.addAttribute("cart", cartItems);
-        // }
+        if (authentication != null && authentication.isAuthenticated()) {
+            List<CartDetailResponse> cartItems = cartService.getCartByEmail(authentication.getName());
+            model.addAttribute("carts", cartItems);
+        }
         return "client/cart";
     }
 
+    @PostMapping("/add-to-cart")
+    public ResponseEntity<Integer> addToCart(@RequestBody CartRequest c, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        cartService.saveCart(userService.getIdUserByEmail(c.getEmail()), c.getProducts());
+        int cartCount = cartService.getCountCartByEmail(c.getEmail());
+        session.setAttribute("cart", cartCount);
+        return ResponseEntity.ok(cartCount);
+    }
+
     @GetMapping("/checkout")
-    public String checkout(Model model) {
+    public String checkout(Model model, Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            List<CartDetailResponse> cartItems = cartService.getCartByEmail(authentication.getName());
+            model.addAttribute("carts", cartItems);
+        }
         model.addAttribute("pageTitle", "Checkout");
         model.addAttribute("order", new OrderRequest());
         return "client/checkout";
     }
-  
-
-
 
     @GetMapping("/profile")
     public String profile(Model model, Authentication authentication) {

@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.security.entities.Role;
 import com.example.security.entities.User;
+import com.example.security.repositories.CartRepository;
 import com.example.security.repositories.UserRepository;
+import com.example.security.services.cart.CartService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,36 +28,14 @@ public class TestRestController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    private CartService cartRepository;
+
     @GetMapping("/test1")
-    public User getMethodName() {
-        User user = userRepository.findById(1).get();
-        List<Role> roles = user.getRoles();
-        for (Role role : roles) {
-            System.out.println(role.getName());
-        }
-        user.setRoles(roles);
-
-        return user;
+    public void getMethodName() {
+        cartRepository.deleteCartByEmail("anphung311002@gmail.com");
     }
 
-    @PostMapping("/upload-binary")
-    public String uploadBinaryFile(@RequestBody byte[] fileBytes) {
-        try {
-            String uploadDir = "uploads/";
-            Path uploadPath = Paths.get(uploadDir);
-
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            // Đặt tên file cố định hoặc từ query param nếu muốn
-            Path filePath = uploadPath.resolve("uploaded_file.png");
-            Files.write(filePath, fileBytes);
-
-            return "Binary file uploaded successfully: " + filePath.toString();
-        } catch (IOException e) {
-            return "Binary file upload failed: " + e.getMessage();
-        }
-    }
+  
 
 }

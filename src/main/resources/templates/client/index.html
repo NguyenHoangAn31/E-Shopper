@@ -253,12 +253,51 @@
     </div>
     <!-- Vendor End -->
 
-    <script>
-        // if (window.location.search.includes("loginSuccess=true")) {
-            
-        // }
+    <script th:inline="javascript">
 
+        var currentUser = /*[[${#authentication.principal}]]*/ null;
+
+        async function sendCartToServer(carts) {
+            fetch("/add-to-cart", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email: currentUser.email, products: carts })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text); });
+                    }
+                    return response.text();  // Giả sử server trả về JSON chứa số lượng giỏ hàng
+                })
+                .then(data => {
+                    console.log("Cart successfully added to server");
+
+                    // Cập nhật số lượng giỏ hàng vào thẻ HTML
+                    document.getElementById("countCartLogin").innerText = data;
+
+                    // Xóa giỏ hàng trong localStorage sau khi đã lưu thành công
+                    localStorage.removeItem("carts");
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+
+        }
+
+        if (currentUser == "anonymousUser" && window.location.search.includes("orderstatus=Success")) {
+            localStorage.removeItem("carts");
+        }
+
+        if (window.location.search.includes("loginSuccess=true")) {
+            var carts = JSON.parse(localStorage.getItem("carts")) || [];
+            if (carts.length > 0) {
+                sendCartToServer(carts);
+            }
+        }
     </script>
+
 </main>
 
 </html>

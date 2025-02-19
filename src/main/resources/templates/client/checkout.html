@@ -26,6 +26,9 @@
             <div class="col-lg-8">
                 <div class="mb-4">
                     <h4 class="font-weight-semi-bold mb-4">Billing Address</h4>
+                    <div th:if="${(param.error != null) and (param.error[0] == 'not-blank')}" style="color: red;">
+                        Please enter full your information.
+                    </div>
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label>First Name</label>
@@ -192,7 +195,8 @@
                         </div>
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
-                        <button class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Place Order</button>
+                        <button class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3 order">Place
+                            Order</button>
                     </div>
                 </div>
             </div>
@@ -200,13 +204,20 @@
     </div>
     <!-- Checkout End -->
 
-    <script>
+    <script th:inline="javascript">
         var currentUser = /*[[${#authentication.principal}]]*/ null;
-        if (currentUser == null) {
+        var orderButton = document.querySelector(".order");
+
+        if (currentUser == "anonymousUser") {
 
             // Lấy dữ liệu giỏ hàng từ localStorage
             let cartItems = JSON.parse(localStorage.getItem("carts")) || [];
             let subtotal = 0;
+
+            if (cartItems.length < 1) {
+                orderButton.disabled = true;
+            }
+
 
 
             document.addEventListener("DOMContentLoaded", function () {
@@ -244,12 +255,12 @@
 
 
             document.addEventListener("DOMContentLoaded", function () {
-                document.querySelector(".btn-primary").addEventListener("click", function (event) {
+                document.querySelector(".order").addEventListener("click", function (event) {
                     event.preventDefault(); // Ngăn form load lại trang
 
                     // Lấy dữ liệu từ các trường input
                     let checkoutData = {
-                        user_id: currentUser == null ? null : currentUser,
+                        // user_id: currentUser == null ? null : currentUser,
                         firstName: document.querySelector('input[placeholder="John"]').value.trim(),
                         lastName: document.querySelector('input[placeholder="Doe"]').value.trim(),
                         email: document.querySelector('input[placeholder="example@email.com"]').value.trim(),
@@ -276,15 +287,17 @@
                     })
                         .then(response => response.text())
                         .then(data => {
-                            if (checkoutData.paymentMethod == "Paypal") {
+                            if (data == 'notblank') {
+                                alert("Vui lý nhập thông tin")
+                            }
+                            else if (checkoutData.paymentMethod == "Paypal") {
                                 window.location.href = data; // Chuyển hướng người dùng tới PayPal
                             }
-                            if (checkoutData.paymentMethod == "VN Pay") {
+                            else if (checkoutData.paymentMethod == "VN Pay") {
                                 window.location.href = data; // Chuyển hướng người dùng tới PayPal
                             }
                             else if (checkoutData.paymentMethod == "COD") {
-                                window.location.href = "/";
-
+                                window.location.href = "/?orderstatus=success";
                             }
 
                         })
@@ -297,6 +310,77 @@
             });
 
 
+        }
+        else {
+            var carts = /*[[${carts}]]*/[];
+            var total = 0;
+
+            if (carts.length < 1) {
+                orderButton.disabled = true;
+            }
+
+            for (var i = 0; i < carts.length; i++) {
+                total += carts[i].price * carts[i].quantity;
+            }
+
+            document.getElementById("subtotal").innerText = `$${total.toFixed(2)}`;
+            document.getElementById("total").innerHTML = `$${(total + 10).toFixed(2)}`;
+
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelector(".order").addEventListener("click", function (event) {
+                    event.preventDefault(); // Ngăn form load lại trang
+
+
+                    // Lấy dữ liệu từ các trường input
+                    let checkoutData = {
+                        // user_id: currentUser == null ? null : currentUser,
+                        firstName: document.querySelector('input[placeholder="John"]').value.trim(),
+                        lastName: document.querySelector('input[placeholder="Doe"]').value.trim(),
+                        email: document.querySelector('input[placeholder="example@email.com"]').value.trim(),
+                        phone: document.querySelector('input[placeholder="+123 456 789"]').value.trim(),
+                        address: document.querySelector('input[placeholder="123 Street"]').value.trim(),
+                        ward: document.querySelector('input[placeholder="New York"]').value.trim(),
+                        district: document.querySelectorAll('input[placeholder="New York"]')[1].value.trim(),
+                        province: document.querySelectorAll('input[placeholder="New York"]')[2].value.trim(),
+                        products: carts,
+                        paymentMethod: document.querySelector('input[name="payment"]:checked').nextElementSibling.innerText.trim(),
+                        totalPrice: parseFloat(total + 10),
+                        description: document.getElementById("message").value
+                    };
+
+                    console.log("Dữ liệu checkout:", checkoutData);
+                    console.log("paymentMethod:", checkoutData.paymentMethod);
+
+                    fetch("http://localhost:8080/api/checkout", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(checkoutData)
+                    })
+                        .then(response => response.text())
+                        .then(data => {
+                            if (data == 'notblank') {
+                                alert("Vui lý nhập thông tin")
+                            }
+                            else if (checkoutData.paymentMethod == "Paypal") {
+                                window.location.href = data; // Chuyển hướng người dùng tới PayPal
+                            }
+                            else if (checkoutData.paymentMethod == "VN Pay") {
+                                window.location.href = data; // Chuyển hướng người dùng tới PayPal
+                            }
+                            else if (checkoutData.paymentMethod == "COD") {
+                                window.location.href = "/?orderstatus=success";
+                            }
+
+                        })
+                        .catch(error => {
+                            console.error("error:", error);
+                            alert("Có lỗi xảy ra, vui lòng thử lại!");
+                        });
+
+                });
+            });
         }
     </script>
 
