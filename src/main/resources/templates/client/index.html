@@ -74,10 +74,10 @@
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
 
-            <div class="col-lg-3 col-md-6 pb-1" th:each="category : ${categories}">
+            <div class="col-lg-4 col-md-6 pb-1" th:each="category : ${categories}">
                 <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
                     <p class="text-right" th:text="${category.productCount} + ' Products'"></p>
-                    <a th:href="@{/shop(category = ${category.name})}"
+                    <a th:href="@{/shop(category = ${category.slug})}"
                         class="cat-img position-relative overflow-hidden mb-3">
                         <img class="img-fluid" th:src="@{/img/category/{image}(image=${category.imageUrl})}" alt="" />
                     </a>
@@ -131,13 +131,11 @@
                             alt="Product Image">
                     </div>
                     <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                        <!-- Tên sản phẩm -->
                         <h6 class="text-truncate mb-3" th:text="${product.name}"></h6>
                         <div class="d-flex justify-content-center">
-                            <!-- Giá sản phẩm -->
                             <h6 th:text="${product.price}">Price</h6>
                             <h6 class="text-muted ml-2">
-                                <del th:text="${product.price}">Old Price</del>
+                                <del th:text="${product.price + 2}">Old Price</del>
                             </h6>
                         </div>
                     </div>
@@ -145,8 +143,9 @@
                         <a th:href="@{/detail(id=${product.id})}" class="btn btn-sm text-dark p-0"><i
                                 class="fas fa-eye text-primary mr-1"></i>View
                             Detail</a>
-                        <a th:href="@{/addtocart(id=${product.id})}" class="btn btn-sm text-dark p-0"><i
-                                class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                        <a href="#" data-toggle="modal" data-id="${product.id}" data-target="#forgotPasswordModal"
+                            class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add
+                            To Cart</a>
                     </div>
                 </div>
             </div>
@@ -193,13 +192,11 @@
                             alt="Product Image">
                     </div>
                     <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                        <!-- Tên sản phẩm -->
                         <h6 class="text-truncate mb-3" th:text="${product.name}"></h6>
                         <div class="d-flex justify-content-center">
-                            <!-- Giá sản phẩm -->
                             <h6 th:text="${product.price}">Price</h6>
                             <h6 class="text-muted ml-2">
-                                <del th:text="${product.price}">Old Price</del>
+                                <del th:text="${product.price + 2}">Old Price</del>
                             </h6>
                         </div>
                     </div>
@@ -207,8 +204,9 @@
                         <a th:href="@{/detail(id=${product.id})}" class="btn btn-sm text-dark p-0"><i
                                 class="fas fa-eye text-primary mr-1"></i>View
                             Detail</a>
-                        <a th:href="@{/addtocart(id=${product.id})}" class="btn btn-sm text-dark p-0"><i
-                                class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                        <a href="#" data-toggle="modal" data-target="#forgotPasswordModal"
+                            class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add
+                            To Cart</a>
                     </div>
                 </div>
             </div>
@@ -253,9 +251,50 @@
     </div>
     <!-- Vendor End -->
 
+
+    <!-- Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog"
+        aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgotPasswordModalLabel">Add To Cart</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="forgot-email">Feature Coming Soon</label>
+
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add To Cart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script th:inline="javascript">
 
+        /*<![CDATA[*/
+
+        var currentUserEmail =
+            [[${
+                #authorization.expression('isAuthenticated()')
+                    ? (#authentication.principal instanceof T(org.springframework.security.oauth2.core.user.OAuth2User)
+                        ? #authentication.principal.attributes['email']
+                        : #authentication.principal.username)
+                    : null
+            }]];
+
+        /*]]>*/
+
         var currentUser = /*[[${#authentication.principal}]]*/ null;
+
+
+        console.log(currentUserEmail);
 
         async function sendCartToServer(carts) {
             fetch("/add-to-cart", {
@@ -263,7 +302,7 @@
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ email: currentUser.email, products: carts })
+                body: JSON.stringify({ email: currentUserEmail, products: carts })
             })
                 .then(response => {
                     if (!response.ok) {
@@ -286,7 +325,7 @@
 
         }
 
-        if (currentUser == "anonymousUser" && window.location.search.includes("orderstatus=Success")) {
+        if (currentUser == "anonymousUser" && window.location.search.includes("orderstatus=success")) {
             localStorage.removeItem("carts");
         }
 

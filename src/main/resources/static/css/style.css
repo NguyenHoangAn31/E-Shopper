@@ -1563,6 +1563,7 @@
   .table-bordered th,
   .table-bordered td {
     border: 1px solid #EDF1FF;
+    
   }
   
   .table-bordered thead th,
@@ -9584,10 +9585,21 @@
   }
   
 
+
+
+.sticky{
+  position: sticky;
+  top: 0;
+  /* overflow: hidden; */
+  z-index: 99;
+  transition: .5s;
+}
+
+
 .main-content{
   max-width: 1400px;
   margin: auto;
-  margin-top: 100px;
+  margin-top: 50px;
   padding: 0 15px !important;
 }
 
@@ -9609,6 +9621,19 @@
   flex: 1 1 350px;
 }
 
+.about-page{
+  gap: 25px;
+}
+.about-page .content,
+.about-page .image{
+  width: 50%;
+}
+
+.about-page .image img{
+  width: 100%;
+}
+
+
 .dashboard{
   flex-wrap: wrap;
 }
@@ -9620,4 +9645,5 @@
 .dashboard .content-dashboard{
   flex: 10 1 350px;
 }
+
 

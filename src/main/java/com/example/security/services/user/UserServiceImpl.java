@@ -14,8 +14,8 @@ import com.example.security.dto.user.UserResponse;
 import com.example.security.entities.Role;
 import com.example.security.entities.User;
 import com.example.security.mapper.UserMapper;
-import com.example.security.repositories.RoleRepository;
 import com.example.security.repositories.UserRepository;
+import com.example.security.services.role.RoleService;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RoleService roleService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -34,6 +34,16 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    @Override
+    public User findById(int id){
+        return userRepository.findById(id).orElse(null);
+    }
 
     @Override
     public UserResponse getUser(String email) {
@@ -66,7 +76,7 @@ public class UserServiceImpl implements UserService {
         user.setName(dto.getName());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setProvider("LOCAL");
-        Role role = roleRepository.findByShortName("USER");
+        Role role = roleService.findByShortName("USER");
         user.setRoles(Collections.singletonList(role));
         userRepository.save(user);
     }

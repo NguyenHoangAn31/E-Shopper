@@ -9,40 +9,41 @@
             <div class="text-center mb-4">
                 <h2 class="section-title px-5"><span class="px-2">Register</span></h2>
             </div>
-            <!-- <div th:if="${errorMessage}" style="color: red;">
-                <p th:text="${errorMessage}"></p>
-            </div> -->
+
             <form action="/register" method="post" th:object="${user}">
 
 
                 <!-- Email -->
                 <div class="control-group">
-                    <input type="email" id="email" name="email" th:value="${user.email}" class="form-control"
+                    <input type="email" id="email" name="email" th:field="${user.email}" class="form-control"
                         placeholder="Your Email" />
                     <div th:if="${#fields.hasErrors('email')}" style="color: red;">
-                        <p th:errors="*{email}"></p>
+                        <p th:text="${#fields.errors('email')[0]}"></p> <!-- Chỉ hiển thị lỗi đầu tiên -->
                     </div>
                 </div>
                 <p class="help-block text-danger"></p>
+
 
                 <!-- Name -->
                 <div class="control-group">
-                    <input type="text" id="name" name="name" th:value="${user.name}" class="form-control"
+                    <input type="text" id="name" name="name" th:field="${user.name}" class="form-control"
                         placeholder="Your Name" />
                     <div th:if="${#fields.hasErrors('name')}" style="color: red;">
-                        <p th:errors="*{name}"></p>
+                        <p th:text="${#fields.errors('name')[0]}"></p> <!-- Chỉ hiển thị lỗi đầu tiên -->
                     </div>
                 </div>
                 <p class="help-block text-danger"></p>
 
+
                 <!-- Password -->
                 <div class="control-group">
-                    <input type="password" id="password" name="password" class="form-control"
-                        placeholder="Your Password" />
+                    <input type="password" id="password" name="password" th:field="${user.password}"
+                        class="form-control" placeholder="Your Password" />
                     <div th:if="${#fields.hasErrors('password')}" style="color: red;">
-                        <p th:errors="*{password}"></p>
+                        <p th:text="${#fields.errors('password')[0]}"></p> <!-- Chỉ hiển thị lỗi đầu tiên -->
                     </div>
                 </div>
+
                 <p class="help-block text-danger"></p>
 
                 <!-- Submit Button -->

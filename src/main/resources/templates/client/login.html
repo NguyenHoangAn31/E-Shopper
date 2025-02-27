@@ -8,25 +8,20 @@
             <div class="text-center mb-4">
                 <h2 class="section-title px-5"><span class="px-2">Login</span></h2>
             </div>
+
             <div th:if="${(param.error != null) and (param.error[0] == 'invalid')}" style="color: red;">
                 Invalid username or password.
             </div>
 
-            <div th:if="${(param.error != null) and (param.error[0] == 'blocked')}" style="color: red;">
+            <div th:if="${(param.error != null) and (param.error[0] == 'disabled')}" style="color: red;">
                 Your account has been blocked.
             </div>
 
-            <div th:if="${(param.error != null) and (param.error[0] == 'too-many-requests')}" style="color: red;">
-                Too many failed attempts. Please try again after 1 minute.
-            </div>
-            <div th:if="${(param.error != null) and (param.error[0] == 'not-blank')}" style="color: red;">
-                Please enter your username and password.
-            </div>
             <p class="help-block text-danger"></p>
 
             <form action="/login" method="post">
                 <div class="control-group">
-                    <input type="text" id="email" name="email" placeholder="Your Email" class="form-control">
+                    <input type="email" id="email" name="email" placeholder="Your Email" class="form-control">
 
                 </div>
                 <p class="help-block text-danger"></p>
@@ -43,13 +38,74 @@
 
             <a th:href="@{/oauth2/authorization/google}">Login with Google</a><br>
             <p class="help-block text-danger"></p>
+            <a th:href="@{/oauth2/authorization/facebook}">Login with Facebook</a><br>
+            <p class="help-block text-danger"></p>
+            <!-- <a th:href="@{/oauth2/authorization/github}">Login with Github</a><br>
+            <p class="help-block text-danger"></p> -->
 
-            <a>Forget Password</a>
+            <!-- Button mở modal -->
+            <a href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forget Password</a>
+
+            <!-- Modal -->
+            <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog"
+                aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="forgotPasswordModalLabel">Forgot Password</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="forgot-password-form">
+                                <div class="form-group">
+                                    <label for="forgot-email">Enter your email</label>
+                                    <input type="email" id="forgot-email" name="email" class="form-control"
+                                        placeholder="Your Email" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Reset Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
         <div class="image-login">
             <img src="/img/login.jpg" alt="" style="width: 100% !important;">
         </div>
     </div>
+    <script>
+        document.getElementById("forgot-password-form").addEventListener("submit", function (event) {
+            event.preventDefault(); // Ngăn form gửi đi theo cách mặc định
+
+            let email = document.getElementById("forgot-email").value;
+
+            fetch("/forgot-password", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({ email: email }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        alert("Email đã được gửi! Vui lòng kiểm tra hộp thư.");
+                        $('#forgotPasswordModal').modal('hide'); // Ẩn modal nếu thành công
+                    } else {
+                        alert("Không tìm thấy email!");
+                    }
+                })
+                .catch(error => {
+                    alert("Đã xảy ra lỗi! Vui lòng thử lại sau.");
+                    console.error("Error:", error);
+                });
+        });
+
+    </script>
 </main>
 
 </html>

@@ -14,10 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
-    @NotBlank(message = "First Name is required.")
-    private String firstName;
-    @NotBlank(message = "Last Name is required.")
-    private String lastName;
+  
+    @NotBlank(message = "Name is required.")
+    private String name;
     @NotBlank(message = "Email is required.")
     @Email(message = "Invalid email format.")
     private String email;

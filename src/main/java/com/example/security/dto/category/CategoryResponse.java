@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class CategoryResponse {
     private int id;
     private String name;
+    private String slug;
     private boolean status;
     private String imageUrl;
     private int productCount;

@@ -12,13 +12,11 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import com.example.security.filter.CustomLoginSuccessHandler;
-import com.example.security.filter.LoginAttemptFilter;
+import com.example.security.filter.CustomAuthenticationFailureHandler;
+import com.example.security.filter.CustomAuthenticationSuccessHandler;
 import com.example.security.services.authentication.UserDetailsServiceImpl;
-import com.example.security.services.user.LoginAttemptService;
 
 @Configuration
 @EnableWebSecurity
@@ -26,13 +24,13 @@ import com.example.security.services.user.LoginAttemptService;
 public class SecurityConfig {
 
         @Autowired
-        private UserDetailsServiceImpl userDetailsService;
+        private UserDetailsServiceImpl userDetailsService;       
 
         @Autowired
-        private LoginAttemptService loginAttemptService;
+        private CustomAuthenticationSuccessHandler customLoginSuccessHandler;
 
         @Autowired
-        private CustomLoginSuccessHandler customLoginSuccessHandler;
+        private CustomAuthenticationFailureHandler customLoginFailureHandler;
 
         @Bean
         public SessionRegistry sessionRegistry() {
@@ -40,7 +38,7 @@ public class SecurityConfig {
         }
 
         @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http, LoginAttemptFilter loginAttemptFilter)
+        public SecurityFilterChain securityFilterChain(HttpSecurity http)
                         throws Exception {
                 http
                                 .csrf(csrf -> csrf.disable())
@@ -48,31 +46,18 @@ public class SecurityConfig {
                                                 .requestMatchers("/dashboard/**").hasAnyAuthority("ADMIN")
                                                 .requestMatchers("/profile").hasAnyAuthority("USER", "ADMIN")
                                                 .anyRequest().permitAll())
-                                // check số lần đăng nhập thất bại
-                                .addFilterBefore(loginAttemptFilter, UsernamePasswordAuthenticationFilter.class)
                                 .formLogin(form -> form
                                                 .loginPage("/login")
                                                 .usernameParameter("email")
                                                 .passwordParameter("password")
-                                                // .defaultSuccessUrl("/?loginSuccess=true", true)
                                                 .successHandler(customLoginSuccessHandler)
-                                                // .failureUrl("/login?error=true")
-                                                .failureHandler((request, response, exception) -> {
-                                                        System.out.println("filer check 2");
-                                                        String email = request.getParameter("email");
-                                                        loginAttemptService.loginFailed(email);
-                                                        response.sendRedirect("/login?error=invalid");
-                                                })
+                                                .failureHandler(customLoginFailureHandler)
                                                 .permitAll())
 
                                 .oauth2Login(oauth2 -> oauth2
                                                 .loginPage("/oauth2/authorization/google")
-                                                // .defaultSuccessUrl("/?loginSuccess=true", true)
                                                 .successHandler(customLoginSuccessHandler)
-                                                .failureHandler((request, response, exception) -> {
-                                                        response.sendRedirect("/login?error=blocked");
-
-                                                }))
+                                                .failureHandler(customLoginFailureHandler))
 
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")

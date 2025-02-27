@@ -13,15 +13,11 @@ import com.example.security.entities.Product;
 @Mapper
 public interface CategoryMapper {
 
-    @Mapping(source = "products", target = "productCount", qualifiedByName = "getProductVariantCount")
+    @Mapping(source = "products", target = "productCount", qualifiedByName = "getProductCount")
     CategoryResponse categoryToResponse(Category category);
 
-    @Named("getProductVariantCount")
-    default int getProductVariantCount(List<Product> products) {
-        if (products == null) return 0;
-
-        return products.stream()
-                .mapToInt(product -> product.getVariants() != null ? product.getVariants().size() : 0)
-                .sum();
+    @Named("getProductCount")
+    default int getProductCount(List<Product> products) {
+        return (products != null) ? products.size() : 0;
     }
 }

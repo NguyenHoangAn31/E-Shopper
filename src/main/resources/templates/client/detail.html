@@ -57,10 +57,7 @@
                     <small class="pt-1">(50 Reviews)</small>
                 </div>
                 <h3 class="font-weight-semi-bold mb-4">$<span th:text="${product.price}"></span></h3>
-                <p class="mb-4">Volup erat ipsum diam elitr rebum et dolor. Est nonumy elitr erat diam stet sit clita
-                    ea. Sanc invidunt ipsum et, labore clita lorem magna lorem ut. Erat lorem duo dolor no sea nonumy.
-                    Accus labore stet, est lorem sit diam sea et justo, amet at lorem et eirmod ipsum diam et rebum kasd
-                    rebum.</p>
+                <p class="mb-4" th:text="${product.description}"></p>
                 <div class="d-flex mb-3">
                     <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
                     <form class="form-size">
@@ -171,25 +168,16 @@
             <div class="col">
                 <div class="nav nav-tabs justify-content-center border-secondary mb-4">
                     <a class="nav-item nav-link active" data-toggle="tab" href="#tab-pane-1">Description</a>
-                    <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-2">Information</a>
+                    <!-- <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-2">Information</a> -->
                     <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Reviews (0)</a>
                 </div>
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="tab-pane-1">
                         <h4 class="mb-3">Product Description</h4>
-                        <p>Eos no lorem eirmod diam diam, eos elitr et gubergren diam sea. Consetetur vero aliquyam
-                            invidunt duo dolores et duo sit. Vero diam ea vero et dolore rebum, dolor rebum eirmod
-                            consetetur invidunt sed sed et, lorem duo et eos elitr, sadipscing kasd ipsum rebum diam.
-                            Dolore diam stet rebum sed tempor kasd eirmod. Takimata kasd ipsum accusam sadipscing, eos
-                            dolores sit no ut diam consetetur duo justo est, sit sanctus diam tempor aliquyam eirmod
-                            nonumy rebum dolor accusam, ipsum kasd eos consetetur at sit rebum, diam kasd invidunt
-                            tempor lorem, ipsum lorem elitr sanctus eirmod takimata dolor ea invidunt.</p>
-                        <p>Dolore magna est eirmod sanctus dolor, amet diam et eirmod et ipsum. Amet dolore tempor
-                            consetetur sed lorem dolor sit lorem tempor. Gubergren amet amet labore sadipscing clita
-                            clita diam clita. Sea amet et sed ipsum lorem elitr et, amet et labore voluptua sit rebum.
-                            Ea erat sed et diam takimata sed justo. Magna takimata justo et amet magna et.</p>
+                        <p th:text="${product.description}"></p>
+                      
                     </div>
-                    <div class="tab-pane fade" id="tab-pane-2">
+                    <!-- <div class="tab-pane fade" id="tab-pane-2">
                         <h4 class="mb-3">Additional Information</h4>
                         <p>Eos no lorem eirmod diam diam, eos elitr et gubergren diam sea. Consetetur vero aliquyam
                             invidunt duo dolores et duo sit. Vero diam ea vero et dolore rebum, dolor rebum eirmod
@@ -232,7 +220,7 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="tab-pane fade" id="tab-pane-3">
                         <div class="row">
                             <div class="col-md-6">
@@ -317,7 +305,7 @@
                                 <!-- Giá sản phẩm -->
                                 <h6 th:text="${product.price}">Price</h6>
                                 <h6 class="text-muted ml-2">
-                                    <del th:text="${product.price}">Old Price</del>
+                                    <del th:text="${product.price + 2}">Old Price</del>
                                 </h6>
                             </div>
                         </div>
@@ -342,7 +330,6 @@
         /*<![CDATA[*/
         var productsVariant = /*[[${productsVariant}]]*/[];
         var product = /*[[${product}]]*/[];
-        console.log(product); // Kiểm tra dữ liệu
         /*]]>*/
 
         // Giá trị mặc định ban đầu
@@ -402,7 +389,8 @@
             // Kiểm tra nếu sản phẩm tồn tại và alert ra id
             if (variant) {
                 var pro = {
-                    id: variant.id,
+                    id:0,
+                    productVariant_id: variant.id,
                     imageUrl: variant.images[0],
                     price: product.price,
                     name: product.name,
@@ -415,7 +403,7 @@
                     let carts = JSON.parse(localStorage.getItem("carts")) || []; // Lấy giỏ hàng từ localStorage hoặc khởi tạo mảng mới
 
                     // Tìm sản phẩm trong giỏ hàng
-                    let existingProduct = carts.find(item => item.id === pro.id);
+                    let existingProduct = carts.find(item => item.productVariant_id === pro.productVariant_id);
 
                     if (existingProduct) {
                         // Nếu sản phẩm đã có, tăng số lượng
@@ -430,11 +418,33 @@
                     console.log("Cập nhật giỏ hàng:", carts);
                 }
                 else {
+                    carts = [];
+                    carts.push(pro);
+                    fetch("/add-to-cart", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ email: currentUser.email, products: carts })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.text().then(text => { throw new Error(text); });
+                            }
+                            return response.text();  
+                        })
+                        .then(data => {
+                            document.getElementById("countCartLogin").innerText = data;
+                            console.log("Cart successfully added to server");
+
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
                 }
 
-                // nếu chưa login thì lưu vào localstorage, nếu rồi thì gọi hàm addtocart nhận vào 1 cartdto
-                // login thành công kiểm tra localsotrage có cart không, nếu có thì gọi hàm addtocart và xóa localstorage
-                alert("Product ID: " + variant.id + "quantity: " + quantity);  // Hiển thị ID sản phẩm
+                // alert("Product ID: " + variant.id + "quantity: " + quantity); 
+                alert("Add to cart sucessfully!"); 
             } else {
                 alert("No product selected!");
             }

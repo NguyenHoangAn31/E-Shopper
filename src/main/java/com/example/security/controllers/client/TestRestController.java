@@ -29,12 +29,8 @@ public class TestRestController {
     UserRepository userRepository;
 
     @Autowired
-    private CartService cartRepository;
+    private CartService cartService;
 
-    @GetMapping("/test1")
-    public void getMethodName() {
-        cartRepository.deleteCartByEmail("anphung311002@gmail.com");
-    }
 
   
 

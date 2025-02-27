@@ -33,9 +33,7 @@ public class Order extends BaseEntity{
 
     private String status;
 
-    private String firstName;
-
-    private String lastName;
+    private String Name;
 
     private String email;
 

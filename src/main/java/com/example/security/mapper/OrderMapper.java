@@ -46,7 +46,7 @@ public interface OrderMapper {
                     OrderDetail detail = new OrderDetail();
                     detail.setQuantity(product.getQuantity());
                     detail.setPrice(product.getPrice());
-                    detail.setProductVariant(mapProductVariant(product.getId()));
+                    detail.setProductVariant(mapProductVariant(product.getProductVariant_id()));
                     detail.setOrder(order); // Gán order để tránh null
                     return detail;
                 })

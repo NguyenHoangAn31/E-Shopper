@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CartDetailResponse {
     private int id;
+    private int productVariant_id;
     private String imageUrl;
     private String name;
     private String size;

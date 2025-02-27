@@ -12,10 +12,10 @@ import com.example.security.entities.Cart;
 import com.example.security.entities.CartDetail;
 import com.example.security.entities.ProductVariant;
 import com.example.security.entities.User;
-import com.example.security.mapper.CartMapper;
 import com.example.security.repositories.CartRepository;
-import com.example.security.repositories.ProductVariantRepositry;
-import com.example.security.repositories.UserRepository;
+import com.example.security.services.productvariant.ProductVariantService;
+import com.example.security.services.user.UserService;
+
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -23,13 +23,10 @@ public class CartServiceImpl implements CartService {
     private CartRepository cartRepository;
 
     @Autowired
-    private CartMapper cartDetailMapper;
+    private ProductVariantService productVariantService;
 
     @Autowired
-    private ProductVariantRepositry productVariantRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     public void saveCart(int user_id, List<CartDetailResponse> cartDetails) {
@@ -47,7 +44,7 @@ public class CartServiceImpl implements CartService {
                 // Check if product already exists in the cart
                 boolean productExists = false;
                 for (CartDetail existingDetail : cart.getCartDetails()) {
-                    if (existingDetail.getProductVariant().getId() == newDetail.getId()) {
+                    if (existingDetail.getProductVariant().getId() == newDetail.getProductVariant_id()) {
                         // Product exists, so increase the quantity
                         existingDetail.setQuantity(existingDetail.getQuantity() + newDetail.getQuantity());
                         productExists = true;
@@ -61,8 +58,7 @@ public class CartServiceImpl implements CartService {
                     newCartDetail.setQuantity(newDetail.getQuantity());
                     newCartDetail.setPrice(newDetail.getPrice());
                     // Assuming you have a method to get the ProductVariant by ID
-                    ProductVariant productVariant = productVariantRepository.findById(newDetail.getId())
-                            .orElseThrow(() -> new RuntimeException("Product not found"));
+                    ProductVariant productVariant = productVariantService.findById(newDetail.getProductVariant_id());
                     newCartDetail.setProductVariant(productVariant);
                     newCartDetail.setCart(cart);
                     cart.getCartDetails().add(newCartDetail);
@@ -72,7 +68,7 @@ public class CartServiceImpl implements CartService {
         } else {
             // If no cart exists, create a new cart and save it
             cart = new Cart();
-            User user = userRepository.findById(user_id).orElseThrow(() -> new RuntimeException("User not found"));
+            User user = userService.findById(user_id);
             cart.setUser(user);
 
             // Convert the CartRequest to CartDetail entities
@@ -80,8 +76,7 @@ public class CartServiceImpl implements CartService {
                 CartDetail cartDetail = new CartDetail();
                 cartDetail.setQuantity(newDetail.getQuantity());
                 cartDetail.setPrice(newDetail.getPrice());
-                ProductVariant productVariant = productVariantRepository.findById(newDetail.getId())
-                        .orElseThrow(() -> new RuntimeException("Product not found"));
+                ProductVariant productVariant = productVariantService.findById(newDetail.getProductVariant_id());
                 cartDetail.setProductVariant(productVariant);
                 cartDetail.setCart(cart);
                 cart.getCartDetails().add(cartDetail);
@@ -104,7 +99,8 @@ public class CartServiceImpl implements CartService {
         List<CartDetail> cartDetailsList = cartRepository.getCartByEmail(email);
         for (CartDetail cartDetail : cartDetailsList) {
             CartDetailResponse cartDetailResponse = new CartDetailResponse();
-            cartDetailResponse.setId(cartDetail.getProductVariant().getId());
+            cartDetailResponse.setId(cartDetail.getId());
+            cartDetailResponse.setProductVariant_id(cartDetail.getProductVariant().getId());
             cartDetailResponse.setImageUrl(cartDetail.getProductVariant().getImages().get(0).getPath());
             cartDetailResponse.setPrice(cartDetail.getPrice());
             cartDetailResponse.setName(cartDetail.getProductVariant().getProduct().getName());
@@ -118,7 +114,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void deleteCartByEmail(String email){
+    public void deleteCartByEmail(String email) {
         Cart cart = cartRepository.findByUserEmail(email).get();
         if (cart != null) {
             cart.getCartDetails().clear(); // Xóa tham chiếu cartDetails trước

@@ -30,44 +30,48 @@
                         Please enter full your information.
                     </div>
                     <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label>First Name</label>
-                            <input class="form-control" type="text" placeholder="John">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Last Name</label>
-                            <input class="form-control" type="text" placeholder="Doe">
+
+                        <div class="col-md-12 form-group">
+                            <label>Name</label>
+                            <input class="form-control" id="name" type="text" placeholder="Doe"
+                                th:value="${user?.name ?: ''}">
                         </div>
                         <div class="col-md-6 form-group">
                             <label>E-mail</label>
-                            <input class="form-control" type="text" placeholder="example@email.com">
+                            <input class="form-control" id="email" type="text" placeholder="example@email.com"
+                                th:value="${user?.email ?: ''}">
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Mobile No</label>
-                            <input class="form-control" type="text" placeholder="+123 456 789">
+                            <input class="form-control" id="phone" type="text" placeholder="+123 456 789"
+                                th:value="${user?.phone ?: ''}">
                         </div>
+
                         <div class="col-md-6 form-group">
-                            <label>Address</label>
-                            <input class="form-control" type="text" placeholder="123 Street">
+                            <label>Province</label>
+                            <select class="custom-select" name="province" id="province" required>
+                                <option value="" disabled selected hidden></option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label>District</label>
+                            <select class="custom-select" name="district" id="district" required>
+                            </select>
                         </div>
 
                         <div class="col-md-6 form-group">
                             <label>Ward</label>
-                            <input class="form-control" type="text" placeholder="New York">
-                            <!-- <select class="custom-select">
-                                <option selected>United States</option>
-                                <option>Afghanistan</option>
-                                <option>Albania</option>
-                                <option>Algeria</option>
-                            </select> -->
+                            <select class="custom-select" name="ward" id="ward" required>
+
+                            </select>
                         </div>
+
                         <div class="col-md-6 form-group">
-                            <label>District</label>
-                            <input class="form-control" type="text" placeholder="New York">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Province</label>
-                            <input class="form-control" type="text" placeholder="New York">
+                            <label>Address</label>
+                            <input class="form-control" type="text" placeholder="123 Street" id="address"
+                                name="address">
                         </div>
                         <div class="col-md-12 form-group">
                             <label>Message</label>
@@ -156,7 +160,7 @@
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 id="shipping" class="font-weight-medium">$10</h6>
+                            <h6 id="shipping" class="font-weight-medium">$0</h6>
                         </div>
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
@@ -205,184 +209,277 @@
     <!-- Checkout End -->
 
     <script th:inline="javascript">
+
+
+
         var currentUser = /*[[${#authentication.principal}]]*/ null;
         var orderButton = document.querySelector(".order");
+        var cartItems = [];
+        if (currentUser === "anonymousUser") {
+            cartItems = JSON.parse(localStorage.getItem("carts")) || [];
+        } else {
+            cartItems = /*[[${carts}]]*/[];
+        }
+        let shippingCost = 0;
+        let subtotal = cartItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
+        let totalEl = document.getElementById("total");
 
-        if (currentUser == "anonymousUser") {
+        document.addEventListener("DOMContentLoaded", function () {
 
-            // Lấy dữ liệu giỏ hàng từ localStorage
-            let cartItems = JSON.parse(localStorage.getItem("carts")) || [];
-            let subtotal = 0;
+            let cartItemsContainer = document.getElementById("cartItems");
+            let subtotalEl = document.getElementById("subtotal");
 
             if (cartItems.length < 1) {
                 orderButton.disabled = true;
-            }
-
-
-
-            document.addEventListener("DOMContentLoaded", function () {
-                let cartItemsContainer = document.getElementById("cartItems");
-                let subtotalEl = document.getElementById("subtotal");
-                let totalEl = document.getElementById("total");
-                let shippingCost = 10; // Phí ship cố định
-
-
-
-
-                if (cartItems.length < 1) {
-                    cartItemsContainer.innerHTML = `<p>Your cart is empty.</p>`;
-                    subtotalEl.textContent = "$0";
-                    totalEl.textContent = "$0";
-                    return;
-                }
-
-
+                cartItemsContainer.innerHTML = `<p>Your cart is empty.</p>`;
+                subtotalEl.textContent = "$0";
+                totalEl.textContent = "$0";
+            } else {
                 cartItems.forEach(item => {
                     let itemElement = document.createElement("div");
                     itemElement.classList.add("d-flex", "justify-content-between");
-                    itemElement.innerHTML = `<p>${item.name}</p><p>$${item.price}</p>`;
+                    itemElement.innerHTML = `<p>${item.name}</p><p>$${item.price * item.quantity}</p>`;
                     cartItemsContainer.appendChild(itemElement);
-                    subtotal += item.price;
                 });
 
-                let total = subtotal + shippingCost;
-
-                subtotalEl.textContent = `$${subtotal}`;
-                totalEl.textContent = `$${total}`;
-            });
-
-            console.log(cartItems)
-
-
-            document.addEventListener("DOMContentLoaded", function () {
-                document.querySelector(".order").addEventListener("click", function (event) {
-                    event.preventDefault(); // Ngăn form load lại trang
-
-                    // Lấy dữ liệu từ các trường input
-                    let checkoutData = {
-                        // user_id: currentUser == null ? null : currentUser,
-                        firstName: document.querySelector('input[placeholder="John"]').value.trim(),
-                        lastName: document.querySelector('input[placeholder="Doe"]').value.trim(),
-                        email: document.querySelector('input[placeholder="example@email.com"]').value.trim(),
-                        phone: document.querySelector('input[placeholder="+123 456 789"]').value.trim(),
-                        address: document.querySelector('input[placeholder="123 Street"]').value.trim(),
-                        ward: document.querySelector('input[placeholder="New York"]').value.trim(),
-                        district: document.querySelectorAll('input[placeholder="New York"]')[1].value.trim(),
-                        province: document.querySelectorAll('input[placeholder="New York"]')[2].value.trim(),
-                        products: cartItems,
-                        paymentMethod: document.querySelector('input[name="payment"]:checked').nextElementSibling.innerText.trim(),
-                        totalPrice: parseFloat(subtotal + 10),
-                        description: document.getElementById("message").value
-                    };
-
-                    console.log("Dữ liệu checkout:", checkoutData);
-                    console.log("paymentMethod:", checkoutData.paymentMethod);
-
-                    fetch("http://localhost:8080/api/checkout", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(checkoutData)
-                    })
-                        .then(response => response.text())
-                        .then(data => {
-                            if (data == 'notblank') {
-                                alert("Vui lý nhập thông tin")
-                            }
-                            else if (checkoutData.paymentMethod == "Paypal") {
-                                window.location.href = data; // Chuyển hướng người dùng tới PayPal
-                            }
-                            else if (checkoutData.paymentMethod == "VN Pay") {
-                                window.location.href = data; // Chuyển hướng người dùng tới PayPal
-                            }
-                            else if (checkoutData.paymentMethod == "COD") {
-                                window.location.href = "/?orderstatus=success";
-                            }
-
-                        })
-                        .catch(error => {
-                            console.error("error:", error);
-                            alert("Có lỗi xảy ra, vui lòng thử lại!");
-                        });
-
-                });
-            });
-
-
-        }
-        else {
-            var carts = /*[[${carts}]]*/[];
-            var total = 0;
-
-            if (carts.length < 1) {
-                orderButton.disabled = true;
+                subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
             }
 
-            for (var i = 0; i < carts.length; i++) {
-                total += carts[i].price * carts[i].quantity;
-            }
+            console.log("Cart Items:", cartItems);
 
-            document.getElementById("subtotal").innerText = `$${total.toFixed(2)}`;
-            document.getElementById("total").innerHTML = `$${(total + 10).toFixed(2)}`;
+            orderButton.addEventListener("click", function (event) {
+                event.preventDefault();
 
-            document.addEventListener("DOMContentLoaded", function () {
-                document.querySelector(".order").addEventListener("click", function (event) {
-                    event.preventDefault(); // Ngăn form load lại trang
+                // Lấy giá trị từ các trường input
+                let name = document.querySelector("#name").value.trim();
+                let email = document.querySelector("#email").value.trim();
+                let phone = document.querySelector("#phone").value.trim();
+                let address = document.querySelector("#address").value.trim();
 
+                // Lấy giá trị từ select (ward, district, province) với kiểm tra lỗi
+                let wardSelect = document.querySelector("#ward");
+                let districtSelect = document.querySelector("#district");
+                let provinceSelect = document.querySelector("#province");
 
-                    // Lấy dữ liệu từ các trường input
-                    let checkoutData = {
-                        // user_id: currentUser == null ? null : currentUser,
-                        firstName: document.querySelector('input[placeholder="John"]').value.trim(),
-                        lastName: document.querySelector('input[placeholder="Doe"]').value.trim(),
-                        email: document.querySelector('input[placeholder="example@email.com"]').value.trim(),
-                        phone: document.querySelector('input[placeholder="+123 456 789"]').value.trim(),
-                        address: document.querySelector('input[placeholder="123 Street"]').value.trim(),
-                        ward: document.querySelector('input[placeholder="New York"]').value.trim(),
-                        district: document.querySelectorAll('input[placeholder="New York"]')[1].value.trim(),
-                        province: document.querySelectorAll('input[placeholder="New York"]')[2].value.trim(),
-                        products: carts,
-                        paymentMethod: document.querySelector('input[name="payment"]:checked').nextElementSibling.innerText.trim(),
-                        totalPrice: parseFloat(total + 10),
-                        description: document.getElementById("message").value
-                    };
+                let ward = wardSelect && wardSelect.selectedIndex >= 0
+                    ? wardSelect.options[wardSelect.selectedIndex].innerHTML.trim()
+                    : "";
 
-                    console.log("Dữ liệu checkout:", checkoutData);
-                    console.log("paymentMethod:", checkoutData.paymentMethod);
+                let district = districtSelect && districtSelect.selectedIndex >= 0
+                    ? districtSelect.options[districtSelect.selectedIndex].innerHTML.trim()
+                    : "";
 
-                    fetch("http://localhost:8080/api/checkout", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(checkoutData)
+                let province = provinceSelect && provinceSelect.selectedIndex >= 0
+                    ? provinceSelect.options[provinceSelect.selectedIndex].innerHTML.trim()
+                    : "";
+
+                let paymentMethod = document.querySelector('input[name="payment"]:checked')?.nextElementSibling.innerText.trim() || "";
+                let description = document.getElementById("message").value.trim();
+
+                // Kiểm tra nếu có trường nào bị bỏ trống
+                if (!name || !email || !phone || !address || !ward || !district || !province || !paymentMethod) {
+                    alert("Vui lòng nhập đầy đủ thông tin trước khi đặt hàng!");
+                    return;
+                }
+
+                // Nếu tất cả hợp lệ, tạo đối tượng checkoutData
+                let checkoutData = {
+                    name,
+                    email,
+                    phone,
+                    address,
+                    ward,
+                    district,
+                    province,
+                    products: cartItems,
+                    paymentMethod,
+                    totalPrice: subtotal + shippingCost,
+                    description
+                };
+
+                console.log("Checkout Data:", checkoutData);
+
+                fetch("http://localhost:8080/api/checkout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(checkoutData)
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === "notblank") {
+                            alert("Vui lòng nhập thông tin.");
+                        } else if (checkoutData.paymentMethod === "Paypal" || checkoutData.paymentMethod === "VN Pay") {
+                            window.location.href = data;
+                        } else if (checkoutData.paymentMethod === "COD") {
+                            window.location.href = "/?orderstatus=success";
+                        }
                     })
-                        .then(response => response.text())
-                        .then(data => {
-                            if (data == 'notblank') {
-                                alert("Vui lý nhập thông tin")
-                            }
-                            else if (checkoutData.paymentMethod == "Paypal") {
-                                window.location.href = data; // Chuyển hướng người dùng tới PayPal
-                            }
-                            else if (checkoutData.paymentMethod == "VN Pay") {
-                                window.location.href = data; // Chuyển hướng người dùng tới PayPal
-                            }
-                            else if (checkoutData.paymentMethod == "COD") {
-                                window.location.href = "/?orderstatus=success";
-                            }
-
-                        })
-                        .catch(error => {
-                            console.error("error:", error);
-                            alert("Có lỗi xảy ra, vui lòng thử lại!");
-                        });
-
-                });
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("Có lỗi xảy ra, vui lòng thử lại!");
+                    });
             });
+        });
+
+
+
+        ////////////
+
+        const apiUrl_get_province = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
+        const apiUrl_get_district = "https://online-gateway.ghn.vn/shiip/public-api/master-data/district";
+        const apiUrl_get_ward = "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward";
+        const apiUrl_get_shipping = "https: //online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
+
+        const token = "156086da-ee0e-11ed-a281-3aa62a37e0a5";
+        let selectElement_province = document.getElementById("province");
+        let selectElement_district = document.getElementById("district");
+        let selectElement_ward = document.getElementById("ward");
+        let input_address = document.getElementById("address");
+
+        fetch(apiUrl_get_province, {
+            headers: {
+                "Content-Type": "application/json",
+                token: token,
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                data.data.forEach((item) => {
+                    let optionElement = document.createElement("option");
+                    optionElement.value = item.ProvinceID;
+                    optionElement.textContent = item.ProvinceName;
+                    selectElement_province.appendChild(optionElement);
+                });
+            })
+            .catch(error => console.log(error));
+
+
+
+
+        selectElement_province.addEventListener("change", function () {
+            var id_province = this.value;
+            selectElement_district.innerHTML = '';
+
+            input_address.value = '';
+            selectElement_ward.innerHTML = '';
+            let optionElement = document.createElement("option");
+            optionElement.value = '';
+            optionElement.disabled = true;
+            optionElement.selected = true;
+            optionElement.hidden = true;
+            optionElement.textContent = '';
+            selectElement_district.appendChild(optionElement);
+            fetch(apiUrl_get_district, {
+                headers: {
+                    "Content-Type": "application/json",
+                    token: token,
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    data.data.forEach((item) => {
+                        if (item.ProvinceID == id_province) {
+                            let optionElement = document.createElement("option");
+                            optionElement.value = item.DistrictID;
+                            optionElement.textContent = item.DistrictName;
+                            selectElement_district.appendChild(optionElement);
+                        }
+
+                    });
+                })
+                .catch(error => console.log(error));
+        });
+
+        selectElement_district.addEventListener("change", function () {
+            var id_district = this.value;
+            selectElement_ward.innerHTML = '';
+            let optionElement = document.createElement("option");
+            optionElement.value = '';
+            optionElement.disabled = true;
+            optionElement.selected = true;
+            optionElement.hidden = true;
+            optionElement.textContent = '';
+            selectElement_ward.appendChild(optionElement);
+            fetch(`${apiUrl_get_ward}?district_id=${id_district}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    token: token,
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    data.data.forEach((item) => {
+                        let optionElement = document.createElement("option");
+                        optionElement.value = item.WardCode;
+                        optionElement.textContent = item.WardName;
+                        selectElement_ward.appendChild(optionElement);
+                    });
+                })
+                .catch(error => console.log(error));
+        });
+
+
+
+        function transport_fee(callback) {
+            var myHeaders = new Headers();
+            let insurance_value = 200000;
+            let insurance_quantity = 5;
+            let to_district_id = selectElement_district.value;
+            let to_ward_code = selectElement_ward.value;
+
+            myHeaders.append("token", "156086da-ee0e-11ed-a281-3aa62a37e0a5");
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify({
+                "service_id": 53322,
+                "service_type_id": 2,
+                "insurance_value": insurance_value, // Không cần parseInt nếu chắc chắn là số
+                "coupon": null,
+                "from_district_id": 3193,
+                "to_district_id": to_district_id ? parseInt(to_district_id) : 0, // Kiểm tra dữ liệu hợp lệ
+                "to_ward_code": String(to_ward_code), // Đảm bảo là chuỗi
+                "weight": 250 * insurance_quantity,
+                "width": 7 * insurance_quantity,
+                "height": 3 * insurance_quantity,
+                "length": 14 * insurance_quantity
+            });
+
+            console.log("Request body:", raw); // Kiểm tra dữ liệu gửi lên
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            fetch("https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee", requestOptions)
+                .then(response => response.json()) // Chuyển response sang JSON
+                .then(result => {
+                    console.log("Response:", result);
+                    if (result.code === 200 && result.data) {
+                        callback(result.data.total);
+                    } else {
+                        console.error("API Error:", result);
+                    }
+                })
+                .catch(error => console.error('Fetch Error:', error));
         }
+
+        selectElement_ward.addEventListener("change", function () {
+            console.log("Selected ward:", this.value);
+            transport_fee(function (total) {
+                fee = Math.round((total / 25000));
+                console.log("Total fee:", fee);
+                var shipping = document.getElementById("shipping");
+                shipping.textContent = `$${fee}`;
+                shippingCost = fee;
+                totalEl.textContent = `$${(subtotal + shippingCost).toFixed(2)}`;
+            });
+        });
+
     </script>
+
 
 
 </main>

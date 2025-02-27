@@ -27,20 +27,30 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         OAuth2User oAuth2User = super.loadUser(userRequest);
+        String registrationId = userRequest.getClientRegistration().getRegistrationId(); // Xác định Google hay Facebook
         String email = oAuth2User.getAttribute("email");
-
-        // nếu người dùng đã đăng ký bằng email thì khi login bằng google thì trả lại dữ liệu mà người dùng đăng ký
         Optional<User> userOptional = userRepository.findByEmail(email);
         User user;
 
         if (userOptional.isEmpty()) {
             user = new User();
             user.setEmail(email);
-            user.setImageUrl(oAuth2User.getAttribute("picture"));
             user.setEnabled(true);
-            user.setProvider("GOOGLE");
             user.setName(oAuth2User.getAttribute("name"));
-            // Add the default USER role
+
+            // Xác định provider (GOOGLE hoặc FACEBOOK)
+            if ("google".equalsIgnoreCase(registrationId)) {
+                user.setProvider("GOOGLE");
+                user.setImageUrl(oAuth2User.getAttribute("picture"));
+            } else if ("facebook".equalsIgnoreCase(registrationId)) {
+                user.setProvider("FACEBOOK");
+            } else if ("github".equalsIgnoreCase(registrationId)) {
+                user.setProvider("GITHUB");
+            } else {
+                user.setProvider("UNKNOWN");
+            }
+
+            // Thêm quyền mặc định
             Role role = roleRepository.findByShortName("USER");
             user.setRoles(Collections.singletonList(role));
 
@@ -50,9 +60,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 System.out.println("User has been blocked: " + email);
                 throw new UsernameNotFoundException("User has been blocked: " + email);
             }
-            
+
             user = userOptional.get();
         }
+
         return new CustomOAuth2User(oAuth2User, user.getGrantedAuthorities());
     }
+
 }

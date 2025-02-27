@@ -30,7 +30,7 @@ public interface CartMapper {
                     CartDetail detail = new CartDetail();
                     detail.setQuantity(product.getQuantity());
                     detail.setPrice(product.getPrice());
-                    detail.setProductVariant(mapProductVariant(product.getId()));
+                    detail.setProductVariant(mapProductVariant(product.getProductVariant_id()));
                     detail.setCart(cart);
                     return detail;
                 })

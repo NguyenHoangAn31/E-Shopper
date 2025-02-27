@@ -5,7 +5,7 @@
 <main layout:fragment="content">
 
     <!-- Page Header Start -->
-    <div class="container-fluid bg-secondary mb-5">
+    <!-- <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
             <h1 class="font-weight-semi-bold text-uppercase mb-3">Shopping Cart</h1>
             <div class="d-inline-flex">
@@ -14,7 +14,7 @@
                 <p class="m-0">Shopping Cart</p>
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- Page Header End -->
 
 
@@ -26,6 +26,7 @@
                     <thead class="bg-secondary text-dark">
                         <tr>
                             <th>Products</th>
+                            <th>Size</th>
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Total</th>
@@ -43,6 +44,7 @@
                                     style="width: 50px;">
                                 <span th:text="${cart.name}"></span>
                             </td>
+                            <td class="align-middle" th:text="${cart.size}">alo</td>
                             <td class="align-middle" th:text="'$' + ${cart.price}"></td>
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px;">
@@ -53,7 +55,7 @@
                                         </button>
                                     </div>
                                     <input type="text" class="form-control form-control-sm bg-secondary text-center"
-                                        th:value="${cart.quantity}">
+                                        th:value="${cart.quantity}" readonly>
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-primary btn-plus" th:id="${cart.id}"
                                             onclick="cartAction('plus', this)">
@@ -93,8 +95,8 @@
                             <h6 id="subtotal" class="font-weight-medium">$0</h6>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 id="shipping" class="font-weight-medium">$10</h6>
+                            <h6 class="font-weight-medium">Coupon</h6>
+                            <h6 id="shipping" class="font-weight-medium">$0</h6>
                         </div>
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
@@ -112,204 +114,144 @@
         </div>
     </div>
     <!-- Cart End -->
+
+
+
     <script th:inline="javascript">
-
         var currentUser = /*[[${#authentication.principal}]]*/ null;
+        var coupon = 0;
 
-        if (currentUser == "anonymousUser") {
-
+        if (currentUser === "anonymousUser") {
             var carts = JSON.parse(localStorage.getItem("carts")) || [];
             var listItems = document.getElementById("cart-none-login");
 
-            // Clear existing content before adding new rows
-            listItems.innerHTML = "";
-
-
             function updateCartSummary() {
-                // Calculate Subtotal
-                let subtotal = 0;
-                carts.forEach(function (cart) {
-                    subtotal += cart.price * cart.quantity;
-                });
-
-                // Define Shipping (for simplicity, it's static, but could be calculated based on subtotal)
-                let shipping = 10;
-
-                // Calculate Total (Subtotal + Shipping)
-                let total = subtotal + shipping;
-
-                // Update the HTML elements
+                let subtotal = carts.reduce((sum, cart) => sum + cart.price * cart.quantity, 0);
                 document.getElementById("subtotal").innerText = `$${subtotal.toFixed(2)}`;
-                document.getElementById("shipping").innerText = `$${shipping.toFixed(2)}`;
-                document.getElementById("total").innerText = `$${total.toFixed(2)}`;
+                document.getElementById("shipping").innerText = `$${coupon.toFixed(2)}`;
+                if (carts.length > 0) {
+                    document.getElementById("checkoutBtn").style.pointerEvents = "auto";
+                    document.getElementById("total").innerText = `$${(subtotal + coupon).toFixed(2)}`;
+                } else {
+                    document.getElementById("checkoutBtn").style.pointerEvents = "none";
+                    document.getElementById("total").innerText = `$0`;
+                }
             }
 
-
-            // Function to update the cart in localStorage
             function updateCart() {
                 localStorage.setItem("carts", JSON.stringify(carts));
             }
 
-            // Function to handle the quantity increase
-            function increaseQuantity(index) {
-                carts[index].quantity += 1;
+            function modifyQuantity(index, change) {
+                carts[index].quantity = Math.max(1, carts[index].quantity + change);
                 updateCart();
                 renderCart();
                 updateCartSummary();
             }
 
-            // Function to handle the quantity decrease
-            function decreaseQuantity(index) {
-                if (carts[index].quantity > 1) {
-                    carts[index].quantity -= 1;
-                    updateCart();
-                    renderCart();
-                    updateCartSummary();
-                }
-            }
-
-            function loadCheckout() {
-                var checkoutBtn = document.getElementById("checkoutBtn");
-                if (carts.length < 1) {
-                    checkoutBtn.style.pointerEvents = 'none'
-                }
-            }
-            // Function to handle product removal
             function removeProduct(index) {
-                carts.splice(index, 1);  // Remove product from the cart array
+                carts.splice(index, 1);
                 updateCart();
                 renderCart();
-                uploadCart();
                 updateCartSummary();
-                loadCheckout()
+                uploadCart();
             }
 
-            // Function to render the cart items dynamically
             function renderCart() {
-                listItems.innerHTML = "";  // Clear the table body before rendering
-
-                // Loop through the carts array and create a row for each item
-                carts.forEach(function (cart, index) {
-                    // Create a table row
-                    var row = document.createElement("tr");
-
-                    // Product name (column 1)
-                    var productCell = document.createElement("td");
-                    productCell.classList.add("align-middle");
-                    productCell.innerHTML = `<img src="img/${cart.imageUrl}" alt="" style="width: 50px;"> ${cart.name}`;
-                    row.appendChild(productCell);
-
-                    // Price (column 2)
-                    var priceCell = document.createElement("td");
-                    priceCell.classList.add("align-middle");
-                    priceCell.innerText = `$${cart.price}`;
-                    row.appendChild(priceCell);
-
-                    // Quantity control (column 3)
-                    var quantityCell = document.createElement("td");
-                    quantityCell.classList.add("align-middle");
-                    quantityCell.innerHTML = `
-                <div class="input-group quantity mx-auto" style="width: 100px;">
-                    <div class="input-group-btn">
-                        <button class="btn btn-sm btn-primary btn-minus" onclick="decreaseQuantity(${index})">
-                            <i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                    <input type="text" class="form-control form-control-sm bg-secondary text-center" value="${cart.quantity}" readonly>
-                    <div class="input-group-btn">
-                        <button class="btn btn-sm btn-primary btn-plus" onclick="increaseQuantity(${index})">
-                            <i class="fa fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-                    row.appendChild(quantityCell);
-
-                    // Total price (column 4)
-                    var totalPriceCell = document.createElement("td");
-                    totalPriceCell.classList.add("align-middle");
-                    totalPriceCell.innerText = `$${cart.price * cart.quantity}`;
-                    row.appendChild(totalPriceCell);
-
-                    // Delete button (column 5)
-                    var deleteCell = document.createElement("td");
-                    deleteCell.classList.add("align-middle");
-                    deleteCell.innerHTML = `<button class="btn btn-sm btn-primary" onclick="removeProduct(${index})"><i class="fa fa-times"></i></button>`;
-                    row.appendChild(deleteCell);
-
-                    // Append the row to the table body
-                    listItems.appendChild(row);
+                listItems.innerHTML = "";
+                carts.forEach((cart, index) => {
+                    listItems.innerHTML += `
+                        <tr>
+                            <td class="align-middle">
+                                <img src="img/product/${cart.imageUrl}" alt="" style="width: 50px;"> ${cart.name}
+                            </td>
+                            <td class="align-middle">${cart.size}</td>
+                            <td class="align-middle">$${cart.price}</td>
+                            <td class="align-middle">
+                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                    <button class="btn btn-sm btn-primary btn-minus" onclick="modifyQuantity(${index}, -1)"><i class="fa fa-minus"></i></button>
+                                    <input type="text" class="form-control form-control-sm bg-secondary text-center" value="${cart.quantity}" readonly>
+                                    <button class="btn btn-sm btn-primary btn-plus" onclick="modifyQuantity(${index}, 1)"><i class="fa fa-plus"></i></button>
+                                </div>
+                            </td>
+                            <td class="align-middle">$${(cart.price * cart.quantity).toFixed(2)}</td>
+                            <td class="align-middle">
+                                <button class="btn btn-sm btn-primary" onclick="removeProduct(${index})"><i class="fa fa-times"></i></button>
+                            </td>
+                        </tr>
+                    `;
                 });
             }
-            // Initial render
+
             renderCart();
-            loadCheckout()
             updateCartSummary();
-        }
-        else {
-            var carts = /*[[${carts}]]*/[];
-            var shippingFee = 10; // Phí vận chuyển cố định
+        } else {
 
-            // Hàm cập nhật lại tổng tiền giỏ hàng
-            function updateTotal() {
-                let total = 0;
-                document.querySelectorAll("tr").forEach((row) => {
-                    let priceElement = row.querySelector("td:nth-child(2)");
+            var cartItems = /*[[${carts}]]*/[];
+            console.log("cartItems:", cartItems);
+
+            function updateTotal(countcard) {
+                let total = Array.from(document.querySelectorAll("tr")).reduce((sum, row) => {
+                    let priceElement = row.querySelector("td:nth-child(3)");
                     let quantityInput = row.querySelector("input");
-
                     if (priceElement && quantityInput) {
                         let price = parseFloat(priceElement.textContent.replace("$", ""));
                         let quantity = parseInt(quantityInput.value);
-                        total += price * quantity;
+                        sum += price * quantity;
                     }
-                });
+                    return sum;
+                }, 0);
+
+                console.log("countcard:", countcard);
+
 
                 document.getElementById("subtotal").innerText = `$${total.toFixed(2)}`;
-                document.getElementById("total").innerText = `$${(total + shippingFee).toFixed(2)}`;
+
+                if (cartItems.length > 0) {
+                    document.getElementById("checkoutBtn").style.pointerEvents = "auto";
+                    document.getElementById("total").innerText = `$${(total + coupon).toFixed(2)}`;
+                } else {
+                    document.getElementById("checkoutBtn").style.pointerEvents = "none";
+                    document.getElementById("total").innerText = `$0`;
+                }
             }
 
             function cartAction(action, button) {
-                console.log(action, button.id);
-                const cartRow = button.closest("tr"); // Lấy hàng chứa sản phẩm
-                const quantityInput = cartRow.querySelector("input"); // Ô input số lượng
-                const priceElement = cartRow.querySelector("td:nth-child(2)"); // Giá sản phẩm
-                const totalElement = cartRow.querySelector("td:nth-child(4) span"); // Tổng giá từng sản phẩm
+                let cartRow = button.closest("tr");
+                let quantityInput = cartRow.querySelector("input");
+                let priceElement = cartRow.querySelector("td:nth-child(3)");
+                let totalElement = cartRow.querySelector("td:nth-child(5) span");
 
-                fetch(`http://localhost:8080/cart-action/${action}/${button.id}`, {
-                    method: "GET",
-                })
-                    .then((response) => response.text())
-                    .then((data) => {
-                        if (data === "deleted") {
-                            cartRow.remove(); // Xóa hàng nếu sản phẩm bị xóa
-                        } else if (data === "plus") {
-                            let quantity = parseInt(quantityInput.value) + 1;
-                            quantityInput.value = quantity;
-                            totalElement.textContent = "$" + (parseFloat(priceElement.textContent.replace("$", "")) * quantity).toFixed(2);
-                        } else if (data === "min") {
-                            let quantity = parseInt(quantityInput.value) - 1;
+                fetch(`http://localhost:8080/cart-action/${action}/${button.id}`, { method: "GET" })
+                    .then(response => response.json()) // Chuyển sang JSON
+                    .then(data => {
+                        console.log("data:", data);
+
+                        if (data.status === "deleted") {
+                            cartRow.remove();
+                            document.getElementById("countCartLogin").innerText = data.countcard;
+
+                        }
+                        else if (data.status === "plus" || data.status === "min") {
+                            let quantity = data.quantity; // Lấy từ server thay vì tự cộng/trừ
+
                             if (quantity <= 0) {
-                                cartRow.remove(); // Nếu số lượng về 0 thì xóa hàng
+                                cartRow.remove();
+                                document.getElementById("countCartLogin").innerText = data.countcard;
                             } else {
                                 quantityInput.value = quantity;
-                                totalElement.textContent = "$" + (parseFloat(priceElement.textContent.replace("$", "")) * quantity).toFixed(2);
+                                totalElement.textContent = `$${(parseFloat(priceElement.textContent.replace("$", "")) * quantity).toFixed(2)}`;
                             }
                         }
-
-                        // Cập nhật lại tổng tiền sau mỗi thay đổi
-                        updateTotal();
+                        updateTotal(data.countcard);
                     })
-                    .catch((error) => {
+                    .catch(error => {
                         console.error("Error:", error);
                         alert("Có lỗi xảy ra, vui lòng thử lại!");
                     });
             }
-
-            // Gọi updateTotal() khi trang load để đảm bảo hiển thị đúng tổng tiền
             updateTotal();
-
         }
-
     </script>
 
 </main>

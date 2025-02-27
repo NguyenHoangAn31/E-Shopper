@@ -43,7 +43,7 @@ public class CheckoutController {
     @Autowired
     private VNPAYService vnpayService;
 
-    double exchangeRate = 24000; // Ví dụ: 1 USD = 24,000 VND
+    double exchangeRate = 24000; 
 
     String cancelUrl = "http://localhost:8080/api/paypal/cancel";
     String successUrl = "http://localhost:8080/api/paypal/success";
@@ -91,7 +91,7 @@ public class CheckoutController {
                     e.printStackTrace();
                 }
             }
-            orderService.checkoutProcess(orderRequest);
+            orderService.checkoutProcess(orderRequest, request);
             return "success";
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,11 +103,12 @@ public class CheckoutController {
     public void successPay(
             @RequestParam("paymentId") String paymentId,
             @RequestParam("PayerID") String payerId,
+            HttpServletRequest request,
             HttpServletResponse response) {
         try {
             Payment payment = paypalService.executePayment(paymentId, payerId);
             if (payment.getState().equals("approved")) {
-                orderService.checkoutProcess(orderMap.get(paymentId));
+                orderService.checkoutProcess(orderMap.get(paymentId), request);
                 orderMap.remove(paymentId);
                 response.sendRedirect("http://localhost:8080?orderstatus=success");
                 return;
@@ -137,7 +138,7 @@ public class CheckoutController {
 
         if (paymentStatus == 1) {
             OrderRequest o = orderMap.get(txnRef);
-            orderService.checkoutProcess(o);
+            orderService.checkoutProcess(o, request);
         }
 
         orderMap.remove(txnRef);

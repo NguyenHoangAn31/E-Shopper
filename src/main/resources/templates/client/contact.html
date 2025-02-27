@@ -5,7 +5,7 @@
 <main layout:fragment="content">
 
     <!-- Page Header Start -->
-    <div class="container-fluid bg-secondary mb-5">
+    <!-- <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
             <h1 class="font-weight-semi-bold text-uppercase mb-3">Contact Us</h1>
             <div class="d-inline-flex">
@@ -14,7 +14,7 @@
                 <p class="m-0">Contact</p>
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- Page Header End -->
 
 
@@ -27,28 +27,45 @@
             <div class="col-lg-7 mb-5">
                 <div class="contact-form">
                     <div id="success"></div>
-                    <form name="sentMessage" id="contactForm" novalidate="novalidate">
+                    <p th:if="${message}" th:text="${message}" class="text-danger"></p>
+                    <form th:action="@{/contact}" method="POST" th:object="${contact}" name="sentMessage" id="contactForm"
+                        novalidate="novalidate">
                         <div class="control-group">
-                            <input type="text" class="form-control" id="name" placeholder="Your Name"
-                                required="required" data-validation-required-message="Please enter your name" />
-                            <p class="help-block text-danger"></p>
+                            <input type="text" class="form-control" id="name" name="name" th:field="*{name}"
+                                placeholder="Your Name" />
+                            <div th:if="${#fields.hasErrors('name')}" style="color: red;">
+                                <p th:errors="*{name}"></p>
+                            </div>
                         </div>
+                        <p class="help-block text-danger"></p>
+
                         <div class="control-group">
-                            <input type="email" class="form-control" id="email" placeholder="Your Email"
-                                required="required" data-validation-required-message="Please enter your email" />
-                            <p class="help-block text-danger"></p>
+                            <input type="email" class="form-control" id="email" name="email" th:field="*{email}"
+                                placeholder="Your Email" />
+                            <div th:if="${#fields.hasErrors('email')}" style="color: red;">
+                                <p th:errors="*{email}"></p>
+                            </div>
                         </div>
+                        <p class="help-block text-danger"></p>
+
                         <div class="control-group">
-                            <input type="text" class="form-control" id="subject" placeholder="Subject"
-                                required="required" data-validation-required-message="Please enter a subject" />
-                            <p class="help-block text-danger"></p>
+                            <input type="text" class="form-control" id="subject" name="subject" th:field="*{subject}"
+                                placeholder="Subject" />
+                            <div th:if="${#fields.hasErrors('subject')}" style="color: red;">
+                                <p th:errors="*{subject}"></p>
+                            </div>
                         </div>
+                        <p class="help-block text-danger"></p>
+
                         <div class="control-group">
-                            <textarea class="form-control" rows="6" id="message" placeholder="Message"
-                                required="required"
-                                data-validation-required-message="Please enter your message"></textarea>
-                            <p class="help-block text-danger"></p>
+                            <textarea class="form-control" rows="6" id="message" placeholder="Message" name="message"
+                                th:field="*{message}"></textarea>
+                            <div th:if="${#fields.hasErrors('message')}" style="color: red;">
+                                <p th:errors="*{message}"></p>
+                            </div>
                         </div>
+                        <p class="help-block text-danger"></p>
+
                         <div>
                             <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">Send
                                 Message</button>
@@ -58,8 +75,13 @@
             </div>
             <div class="col-lg-5 mb-5">
                 <h5 class="font-weight-semi-bold mb-3">Get In Touch</h5>
-                <p>Justo sed diam ut sed amet duo amet lorem amet stet sea ipsum, sed duo amet et. Est elitr dolor elitr
-                    erat sit sit. Dolor diam et erat clita ipsum justo sed.</p>
+                <p>
+                    If you have any questions, feel free to reach out to us. Our team is here to help!
+                    Whether you need assistance with your order, have inquiries about our products,
+                    or simply want fashion advice, we are always ready to provide support.
+
+                </p>
+
                 <div class="d-flex flex-column mb-3">
                     <h5 class="font-weight-semi-bold mb-3">Store 1</h5>
                     <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
